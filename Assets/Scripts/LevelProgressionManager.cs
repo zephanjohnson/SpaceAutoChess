@@ -12,34 +12,36 @@ public class LevelProgressionManager : MonoBehaviour
     private GamestateManager _gamestateManager;
     
     //Public for debugging purposes right now, should technically be private
-    public int level = 1;
+    [SerializeField]
+    public int Level = 1;
     
     private void Start()
     {
         DontDestroyOnLoad(this);
+        Level = 1;
     }
 
-    void LoadPlanningPhase()
+    public void LoadPlanningPhase()
     {
         SceneManager.LoadScene("Planning");
         _gamestateManager.LoadPreviousGameState();
-        
+        Debug.Log("Current level: " + Level);
         //Enter the planning phase, this should call LoadPreviousGameState and transition us to the layout scene
     }
 
-    void CompleteLevel()
+    public void CompleteLevel()
     {
-        level += 1;
+        Level += 1;
         _gamestateManager.SaveCurrentGameState();
         LoadPlanningPhase();
     }
 
-    void LoseLevel()
+    public void LoseLevel()
     {
         LoadPlanningPhase();
     }
 
-    void LoadAutoplayPhase()
+    public void LoadAutoplayPhase()
     {
         SceneManager.LoadScene("Autoplay");
         //Load the autoplayPhase that corresponds to the current level. need to figure out some way to do this that doesn't suck. if we're doing procedural stuff

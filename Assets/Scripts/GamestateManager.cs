@@ -13,6 +13,10 @@ public class GamestateManager : MonoBehaviour
     //This is the currently selected ship that is waiting to be placed.
     private GameObject selectedShip;
 
+    public void Start()
+    {
+        DontDestroyOnLoad(this);
+    }
     //call at the end of every planning phase so we can rollback if the player loses
     public void SaveCurrentGameState()
     {
