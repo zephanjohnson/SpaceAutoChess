@@ -1,4 +1,4 @@
-using System.Collections;
+  using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -14,7 +14,7 @@ public class GamestateManager : MonoBehaviour
     private GameObject selectedShip;
 
     //call at the end of every planning phase so we can rollback if the player loses
-    void SaveCurrentGameState()
+    public void SaveCurrentGameState()
     {
         //save all current ship positions on the board
         //save state of the inventory
@@ -22,21 +22,22 @@ public class GamestateManager : MonoBehaviour
     }
 
     //call if the player loses
-    void LoadPreviousGameState()
+    public void LoadPreviousGameState()
     {
         //load all current ship positions on the board
+        //restore the health of all ships
         //load state of the inventory
         //load the correct level's planning phase
     }
 
     //called when you pick up a new ship
-    void AddToInventory(GameObject ship)
+    public void AddToInventory(AllySpaceObject ship)
     {
         
     }
 
     //called when ship is removed
-    void RemoveFrominventory(GameObject ship)
+    public void RemoveFrominventory(AllySpaceObject ship)
     {
 
     }
@@ -52,13 +53,13 @@ public class GamestateManager : MonoBehaviour
     }
 
     //can be called for a ship either in the inventory or on the map, gets the ship nearest to the mouse click
-    void SelectShip()
+    public void SelectShip()
     {
         
     }
 
     //places the selected ship in the slot closest to the click.
-    void PlaceShip()
+    public void PlaceShip()
     {
         
     }
