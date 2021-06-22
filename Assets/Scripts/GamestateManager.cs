@@ -1,4 +1,5 @@
-  using System.Collections;
+using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -6,12 +7,20 @@ using UnityEngine.UIElements;
 
 public class GamestateManager : MonoBehaviour
 {
+    /// The inventory manager for the game objects
+    private InventoryManager _inventoryManager;
+
     //internal representation of the inventory and board
-    private Inventory _inventory;
-    private Board _board;
+    private Inventory _inventory = new Inventory();
+    private Board _board = new Board();
     
-    //This is the currently selected ship that is waiting to be placed.
-    private GameObject selectedShip;
+    //This is the currently selected collectible that is waiting to be placed.
+    private Collectible selectedCollectible;
+
+    private void Awake()
+    {
+        _inventoryManager = GetComponent<InventoryManager>();
+    }
 
     //call at the end of every planning phase so we can rollback if the player loses
     public void SaveCurrentGameState()
@@ -30,14 +39,15 @@ public class GamestateManager : MonoBehaviour
         //load the correct level's planning phase
     }
 
-    //called when you pick up a new ship
-    public void AddToInventory(AllySpaceObject ship)
+    //called when you pick up a new collectible
+    public void AddToInventory(Collectible collectible)
     {
-        
+        _inventory.Collectibles.Add(collectible);
+        _inventoryManager.AddToInventorySlot(collectible);
     }
 
-    //called when ship is removed
-    public void RemoveFrominventory(AllySpaceObject ship)
+    //called when collectible is removed
+    public void RemoveFrominventory(Collectible collectible)
     {
 
     }
@@ -52,22 +62,25 @@ public class GamestateManager : MonoBehaviour
         get => _board;
     }
 
-    //can be called for a ship either in the inventory or on the map, gets the ship nearest to the mouse click
-    public void SelectShip()
+    //can be called for a collectible either in the inventory or on the map, gets the ship nearest to the mouse click
+    public void SelectCollectible(Collectible collectible)
     {
-        
+        Debug.Log($"Selected {collectible.Name}");
+        selectedCollectible = collectible;
     }
 
     //places the selected ship in the slot closest to the click.
-    public void PlaceShip()
+    public void PlaceCollectible()
     {
-        
+        //When a collectible moves from inventory to the board it changes to the model of the ship instead of an icon,
+        //It disapears if it is an item because it's attached to a ship
+        //It changes back to an icon in the inventory if it was on the board before
     }
 
 
     public class Inventory
     {
-        //a data structure containing all of the ships currently in the inventory
+        public List<Collectible> Collectibles = new List<Collectible>();
     }
 
     public class Board
