@@ -5,9 +5,13 @@ using UnityEngine.Events;
 
 public class SpaceObject : MonoBehaviour
 {
+    public Vector2 GridPosition = new Vector2();
+    public int MovementVelocity =1;
+    public int MovementRange = 1;
+
     // Current Health
     private int _currentHealth;
-    public UnityAction<int> OnCurrentHealthChange;
+    public UnityAction<int, int> OnCurrentHealthChange;
     public int CurrentHealth
     {
         get
@@ -18,9 +22,9 @@ public class SpaceObject : MonoBehaviour
         {
             if (value != _currentHealth)
             {
+                int oldValue = _currentHealth;
                 _currentHealth = value >= 0 ? value : 0;
-                OnCurrentHealthChange?.Invoke(_currentHealth);
-                Debug.Log($"CurrentHealth {_currentHealth}");
+                OnCurrentHealthChange?.Invoke(oldValue, _currentHealth);
             }
         }
     }
@@ -28,7 +32,7 @@ public class SpaceObject : MonoBehaviour
 
     // Max Health
     private int _maxHealth;
-    public UnityAction<int> OnMaxHealthChange;
+    public UnityAction<int, int> OnMaxHealthChange;
     public int MaxHealth
     {
         get
@@ -39,25 +43,10 @@ public class SpaceObject : MonoBehaviour
         {
             if (value != _maxHealth)
             {
+                int oldValue = _maxHealth;
                 _maxHealth = value;
-                OnMaxHealthChange?.Invoke(_maxHealth);
+                OnMaxHealthChange?.Invoke(oldValue, _maxHealth);
             }
         }
     }
-
-
-    private void Awake()
-    {
-        Debug.Log($"setting OnCurrentHealthChange");
-        OnCurrentHealthChange += (int current) =>
-        {
-            Debug.Log($"OnCurrentHealthChange {current}");
-            if (current <= 0)
-            {
-                Debug.Log("Boom");
-                Destroy(this.gameObject);
-            }
-        };
-    }
-
 }

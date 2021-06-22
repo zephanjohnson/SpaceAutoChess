@@ -14,10 +14,10 @@ public class HealthBar : MonoBehaviour
         healthBar.maxValue = AllySpaceObject.MaxHealth;
         healthBar.value = AllySpaceObject.CurrentHealth;
         AllySpaceObject.OnCurrentHealthChange += SetHealth;
-        AllySpaceObject.OnMaxHealthChange += (int value) => { healthBar.maxValue = value; };
+        AllySpaceObject.OnMaxHealthChange += (int oldValue, int value) => { healthBar.maxValue = value; };
     }
 
-    public void SetHealth(int hp)
+    public void SetHealth(int oldValue, int hp)
     {
         healthBar.value = hp;
     }

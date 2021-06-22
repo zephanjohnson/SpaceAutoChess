@@ -5,15 +5,26 @@ using UnityEngine.Events;
 
 public class AllySpaceObject : SpaceObject
 {
-    static int BASE_HEALTH = 50;
+    public static int BASE_HEALTH = 50;
+    public static int BULLET_VELOCITY = 1;
+    public static int BULLET_FIRE_RATE_PER_SECOND = 2;
+    public static int BULLET_DAMAGE = 3;
+    public static int MOVEMENT_VELOCITY = 1;
+    public static int MOVEMENT_RANGE = 2;
 
+    public int BulletVelocity = BULLET_VELOCITY;
+    public int BulletFireRate = BULLET_FIRE_RATE_PER_SECOND;
+    public int BulletDamage = BULLET_DAMAGE;
 
     void Awake()
     {
         MaxHealth = BASE_HEALTH;
         CurrentHealth = MaxHealth;
+        GridPosition = new Vector2(0,0);
+        MovementVelocity = MOVEMENT_VELOCITY;
+        MovementRange = MOVEMENT_RANGE;
 
-        OnCurrentHealthChange += (int current) =>
+        OnCurrentHealthChange += (int oldValue, int current) =>
         {
             if (current <= 0)
             {
@@ -24,12 +35,10 @@ public class AllySpaceObject : SpaceObject
 
     void Start()
     {
-        Debug.Log("AllySpaceStart");
     }
 
     private void OnMouseDown()
     {
-        Debug.Log("Ally Click");
         CurrentHealth -= 5;
     }
 }
