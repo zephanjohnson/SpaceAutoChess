@@ -89,6 +89,10 @@ public class GamestateManager : MonoBehaviour
     //places the selected ship in the slot closest to the click.
     public void PlaceCollectible()
     {
+        _boardManager.AddToBoardSlot(highlightedBoardSlots, selectedCollectible);
+        _inventoryManager.RemoveFromInventorySlot(selectedCollectible);
+        selectedCollectible = null;
+
         //When a collectible moves from inventory to the board it changes to the model of the ship instead of an icon,
         //It disapears if it is an item because it's attached to a ship
         //It changes back to an icon in the inventory if it was on the board before
@@ -103,19 +107,8 @@ public class GamestateManager : MonoBehaviour
 
         if (data.Type == CollectibleType.Ally)
         {
-            var allyData = AllyDataLibrary.Allies[data.Name];
-            var range = allyData.MovementRange;
-            highlightedBoardSlots = new List<Vector2>();
-            bool canPlaceAllyShip = true;
-
-            // go through each slot in range and see if it is occupied
-            for (int y = (int)slotCoordinate.y; y < slotCoordinate.y + range; y++)
-            {
-                var potentialCoordinate = new Vector2(slotCoordinate.x, y);
-                highlightedBoardSlots.Add(potentialCoordinate);
-                canPlaceAllyShip = canPlaceAllyShip && !_boardManager.IsSlotOccupied(potentialCoordinate);
-            }
-
+            highlightedBoardSlots = GetSelectedAllyCoordinateRange(slotCoordinate);
+            bool canPlaceAllyShip = CanPlaceCollectible(slotCoordinate);
             // Color each slot
             var color = canPlaceAllyShip ? Color.green : Color.red;
             foreach (var coordinate in highlightedBoardSlots)
@@ -148,6 +141,55 @@ public class GamestateManager : MonoBehaviour
         {
             _boardManager.Highlight(coordinate, color);
         }
+    }
+
+    public List<Vector2> GetSelectedAllyCoordinateRange(Vector2 slotCoordinate) {
+        var retval = new List<Vector2>();
+        // Don't highlight unless something is selected
+        if (selectedCollectible == null) { return retval; }
+
+        var data = selectedCollectible.Data;
+        if (data.Type == CollectibleType.Ally)
+        {
+            var allyData = AllyDataLibrary.Allies[data.Key];
+            var range = allyData.MovementRange;
+
+            // go through each slot in range and get coordinates
+            for (int y = (int)slotCoordinate.y; y < slotCoordinate.y + range; y++)
+            {
+                var potentialCoordinate = new Vector2(slotCoordinate.x, y);
+                retval.Add(potentialCoordinate);
+            }
+        }
+
+        return retval;
+    }
+
+    public bool CanPlaceCollectible(Vector2 slotCoordinate)
+    {
+        // Don't highlight unless something is selected
+        if (selectedCollectible == null) { return false; }
+
+        var data = selectedCollectible.Data;
+
+        if (data.Type == CollectibleType.Ally)
+        {
+            var coordinates = GetSelectedAllyCoordinateRange(slotCoordinate);
+            bool canPlaceAllyShip = true;
+
+            // go through each slot in range and see if it is occupied
+            foreach(var coordinate in coordinates)
+            {
+                canPlaceAllyShip = canPlaceAllyShip && !_boardManager.IsSlotOccupied(coordinate);
+            }
+
+            // Color each slot
+            return canPlaceAllyShip;
+        }
+
+        // TODO Add path for placing non-ally
+
+        return false;
     }
 
 

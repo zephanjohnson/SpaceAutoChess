@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class BoardSlot : MonoBehaviour
 {
-    public bool IsOccupied;
-    public AllySpaceObject Shipship;
+    [SerializeProperty("IsOccupied")]
+    public bool isOccupied;
+    public bool IsOccupied { get { return _isOccupied; } }
+    private bool _isOccupied;
+    public AllySpaceObject Ship;
     public Vector2 Coordinate;
 
     private GamestateManager _gamestateManager;
     private SpriteRenderer _spriteRenderer;
+    private GameObject _slotSprite;
 
     private void Awake()
     {
         _gamestateManager = FindObjectOfType<GamestateManager>();
         _spriteRenderer = gameObject.GetComponentInChildren<SpriteRenderer>();
+        _slotSprite = transform.Find("SlotSprite").gameObject;
         Highlight(Color.white);
     }
 
@@ -22,9 +27,25 @@ public class BoardSlot : MonoBehaviour
         _spriteRenderer.color = color;
     }
 
+    public void Assign(Collectible col, bool instantiateAlly = false)
+    {
+        _isOccupied = true;
+        _slotSprite.SetActive(false);
+
+        if (instantiateAlly) {
+            var go = Instantiate(Resources.Load("Red Spaceship"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            go.transform.SetParent(transform);
+            go.transform.localPosition = new Vector3(0, 0, -1);
+            Ship = go.GetComponent<AllySpaceObject>();
+        }
+    }
+
     private void OnMouseDown()
     {
-
+        if (_gamestateManager.CanPlaceCollectible(Coordinate))
+        {
+            _gamestateManager.PlaceCollectible();
+        }
     }
 
     private void OnMouseEnter()

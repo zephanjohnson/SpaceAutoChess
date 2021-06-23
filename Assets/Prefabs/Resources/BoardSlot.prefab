@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1257390606292669910}
   - component: {fileID: 8263804466466710612}
   m_Layer: 0
-  m_Name: Square
+  m_Name: SlotSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,8 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe2e11b57bc5c4fb8a1504aa3f8873f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsOccupied: 0
-  Shipship: {fileID: 0}
+  Ship: {fileID: 0}
+  Coordinate: {x: 0, y: 0}
 --- !u!61 &6568137781341605936
 BoxCollider2D:
   m_ObjectHideFlags: 0
