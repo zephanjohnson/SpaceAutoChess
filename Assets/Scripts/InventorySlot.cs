@@ -12,6 +12,7 @@ public class InventorySlot : MonoBehaviour
         IsOccupied = true;
         Collectible = col;
         col.transform.SetParent(transform);
+        col.transform.SetAsFirstSibling();
         col.transform.localPosition = new Vector3(0,0,0);
     }
 }
