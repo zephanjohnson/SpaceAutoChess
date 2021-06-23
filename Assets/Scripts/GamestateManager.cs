@@ -25,6 +25,10 @@ public class GamestateManager : MonoBehaviour
         _boardManager = FindObjectOfType<BoardManager>();
     }
 
+    public void Start()
+    {
+        DontDestroyOnLoad(this);
+    }
     //call at the end of every planning phase so we can rollback if the player loses
     public void SaveCurrentGameState()
     {

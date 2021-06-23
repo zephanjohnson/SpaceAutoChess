@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Staging.unity
     guid: 48da0ee8719314ca195de78a91f49478
+  - enabled: 1
+    path: Assets/Scenes/Planning.unity
+    guid: 3ad75d7dcaa40504c9072346b275b27d
+  - enabled: 1
+    path: Assets/Scenes/Autoplay.unity
+    guid: 6f59e2ad503ecea4b98cb32d18e91b22
   m_configObjects: {}
