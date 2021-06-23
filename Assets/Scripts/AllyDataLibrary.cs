@@ -7,6 +7,7 @@ public struct AllyData
     public int Level;
     public CollectibleType Type;
     public string ResourcePath;
+    public string IconResourcePath;
     public int BaseHealth;
     public int BulletVelocity;
     public int BulletFireRatePerSecond;
@@ -37,6 +38,7 @@ public class AllyDataLibrary
             Level = 1,
             Type = CollectibleType.Ally,
             ResourcePath = "Red Spaceship",
+            IconResourcePath = "AllyIcons/Red Ally Ship",
             BaseHealth = 50,
             BulletVelocity = 1,
             BulletFireRatePerSecond = 3,
@@ -50,6 +52,7 @@ public class AllyDataLibrary
             Level = 1,
             Type = CollectibleType.Ally,
             ResourcePath = "Orange Spaceship",
+            IconResourcePath = "AllyIcons/Orange Ally Ship",
             BaseHealth = 50,
             BulletVelocity = 1,
             BulletFireRatePerSecond = 3,
@@ -63,6 +66,7 @@ public class AllyDataLibrary
             Level = 1,
             Type = CollectibleType.Ally,
             ResourcePath = "Yellow Spaceship",
+            IconResourcePath = "AllyIcons/Yellow Ally Ship",
             BaseHealth = 50,
             BulletVelocity = 1,
             BulletFireRatePerSecond = 3,
@@ -76,6 +80,7 @@ public class AllyDataLibrary
             Level = 1,
             Type = CollectibleType.Ally,
             ResourcePath = "Green Spaceship",
+            IconResourcePath = "AllyIcons/Green Ally Ship",
             BaseHealth = 50,
             BulletVelocity = 1,
             BulletFireRatePerSecond = 3,
@@ -89,6 +94,7 @@ public class AllyDataLibrary
             Level = 1,
             Type = CollectibleType.Ally,
             ResourcePath = "Blue Spaceship",
+            IconResourcePath = "AllyIcons/Blue Ally Ship",
             BaseHealth = 50,
             BulletVelocity = 1,
             BulletFireRatePerSecond = 3,
@@ -102,6 +108,7 @@ public class AllyDataLibrary
             Level = 1,
             Type = CollectibleType.Ally,
             ResourcePath = "Purple Spaceship",
+            IconResourcePath = "AllyIcons/Purple Ally Ship",
             BaseHealth = 50,
             BulletVelocity = 1,
             BulletFireRatePerSecond = 3,

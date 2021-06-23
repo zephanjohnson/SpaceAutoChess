@@ -33,7 +33,9 @@ public class Collectible : MonoBehaviour
         string spaceShipName = GetRandomAllyName();
         var allyData = AllyDataLibrary.Allies[spaceShipName];
         PopulateData(allyData.Data);
-        GetComponent<SpriteRenderer>().color = allyData.Color;
+        var sprite = Resources.Load<Sprite>(allyData.IconResourcePath);
+        GetComponent<SpriteRenderer>().sprite = sprite;
+        GetComponent<SpriteRenderer>().color = Color.white;
     }
 
     public void PopulateData(CollectibleData data) {

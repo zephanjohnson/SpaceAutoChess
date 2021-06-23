@@ -6,7 +6,7 @@ using System.Linq;
 
 public class BoardManager : MonoBehaviour
 {
-    public static int NUM_COLUMNS = 2;
+    public static int NUM_COLUMNS = 3;
     public static int NUM_ROWS = 6;
 
     private BoardSlot[,] _boardSlots = new BoardSlot[NUM_COLUMNS, NUM_ROWS];
