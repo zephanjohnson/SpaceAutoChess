@@ -6,8 +6,8 @@ using UnityEngine.Events;
 public class AllySpaceObject : SpaceObject
 {
     public static int BASE_HEALTH = 50;
-    public static int BULLET_VELOCITY = 1;
-    public static int BULLET_FIRE_RATE_PER_SECOND = 2;
+    public static int BULLET_VELOCITY = 10;
+    public static int BULLET_FIRE_RATE_PER_SECOND = 5;
     public static int BULLET_DAMAGE = 3;
     public static int MOVEMENT_VELOCITY = 1;
     public static int MOVEMENT_RANGE = 2;
@@ -15,6 +15,22 @@ public class AllySpaceObject : SpaceObject
     public int BulletVelocity = BULLET_VELOCITY;
     public int BulletFireRate = BULLET_FIRE_RATE_PER_SECOND;
     public int BulletDamage = BULLET_DAMAGE;
+
+    /*
+     * Variables needed for Oscillations.
+     */
+    protected Vector3 startPosition;
+    protected Rigidbody2D rb;
+    protected bool bFirstTimeOscillating = true;
+    protected Vector3 requestedPosition;
+    protected Vector3 moveV;
+
+    /*
+     * For shooting
+     */
+    public GameObject Bullet;
+    protected Vector2 bulletPos;
+    protected float nextFire;
 
     void Awake()
     {
@@ -35,6 +51,84 @@ public class AllySpaceObject : SpaceObject
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+        startPosition = rb.transform.position;
+    }
+
+
+    /*
+    * Shoots bullets at given rate and frequency
+    */
+    void Shoot()
+    {
+        float fireRate = 1/(float)BulletFireRate;
+        if (Time.time > nextFire)
+        {
+            nextFire = Time.time + fireRate;
+            bulletPos = transform.position;
+            bulletPos += new Vector2(+1f, -.43f);
+            
+            var bullet = Instantiate(Bullet, transform.position, Quaternion.identity);
+            bullet.GetComponent<BulletBehavior>().velX = BulletVelocity;
+        }
+    }
+
+
+    void Oscillate()
+    {
+        Vector3 position = new Vector3(transform.position.x,
+            transform.position.y,
+            transform.position.z);
+
+        float maxRangeUp = startPosition.y + MovementRange / (MovementRange * 2f) ;
+        float maxRangeDown = startPosition.y - MovementRange/ (MovementRange * 2f) ;
+     
+        float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -4f, 4f);
+        float clampedMaxRangeDown = Mathf.Clamp(maxRangeDown, -4f, 4f);
+        bool bChanged = false;
+
+        if (bFirstTimeOscillating)
+        {
+            position.y = clampedMaxRangeUp;
+            bChanged = true;
+            bFirstTimeOscillating = false;
+        }
+        else if (clampedMaxRangeUp == requestedPosition.y && transform.position.y >= requestedPosition.y)
+        {
+            position.y = clampedMaxRangeDown;
+            bChanged = true;
+        }
+        else if (clampedMaxRangeDown == requestedPosition.y && transform.position.y <= requestedPosition.y)
+        {
+            position.y = clampedMaxRangeUp;
+            bChanged = true;
+
+        }
+        if (bChanged)
+        {
+            moveV = position - transform.position;
+            requestedPosition = position;
+        }
+
+    }
+
+
+    /*
+    * executed at fixed time steps (0.02 default). Use this for Unity physics
+    */
+    void FixedUpdate()
+    {
+        //change velocity to calculated moving vector
+        rb.velocity = new Vector2(moveV.x, moveV.y) * (MovementVelocity *.25f);
+    }
+
+    /*
+     * Method executed every frame
+    */
+    void Update()
+    {
+        Oscillate();
+        Shoot();
     }
 
     private void OnMouseDown()
