@@ -56,6 +56,7 @@ namespace Obstacles {
             GameObject c = Instantiate(crystalPrefab) as GameObject;
             spawnLocationY = Random.Range(screenBounds.y, -screenBounds.y);
             c.transform.position = new Vector2(screenBounds.x * 2, spawnLocationY);
+            c.transform.localScale = new Vector2(scaleMultiplier, scaleMultiplier);
         }
 
         private bool reRoll(float current_y) {

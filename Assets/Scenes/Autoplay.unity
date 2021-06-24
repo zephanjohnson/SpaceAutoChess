@@ -782,7 +782,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 26.042353
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -829,7 +829,7 @@ MonoBehaviour:
   crystalPrefab: {fileID: 8998113314965013970, guid: 31717fb02d89946d385fefbda878b97e, type: 3}
   didGameEnd: 0
   spawnTime: 0.8
-  scaleMultiplier: 1
+  scaleMultiplier: 0.1
   loop: 3
 --- !u!1 &2088660171
 GameObject:
