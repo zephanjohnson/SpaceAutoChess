@@ -5,30 +5,12 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    public static int NUM_INVENTORY_SLOTS = 9;
-
-    public float SlotSpacing = 2f;
-
-    private InventorySlot[] _inventorySlots = new InventorySlot[NUM_INVENTORY_SLOTS];
-
-    public Vector3 SpawnLocation = new Vector3(-8,-4,0);
-    private Transform _slotsTransform;
+    private InventorySlot[] _inventorySlots;
 
     public void InitializeInventory()
     {
-        var boardSlots = new GameObject("InventorySlots");
-        _slotsTransform = boardSlots.transform;
-
-        for (int slotIndex = 0; slotIndex < NUM_INVENTORY_SLOTS; slotIndex++)
-        {
-            var go = Instantiate(Resources.Load("InventorySlot"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-            go.transform.SetParent(_slotsTransform);
-            go.transform.localPosition = new Vector3(slotIndex * SlotSpacing, 0, 0) + SpawnLocation;
-            var inventorySlot = go.GetComponent<InventorySlot>();
-            inventorySlot.Index = slotIndex;
-            _inventorySlots[slotIndex] = inventorySlot;
-        }
-
+        _inventorySlots = FindObjectsOfType<InventorySlot>();
+        _inventorySlots = _inventorySlots.OrderBy(slot => slot.transform.position.x).ToArray();
         foreach (var slot in _inventorySlots)
         {
             Debug.Log("Collectible null: " + slot.Collectible == null);
