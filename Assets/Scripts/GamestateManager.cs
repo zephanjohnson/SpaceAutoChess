@@ -55,14 +55,6 @@ public class GamestateManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance)
-        {
-            Destroy(gameObject);
-        }
-        else {
-            Instance = this;
-        }
-
         SceneManager.sceneLoaded += OnSceneChange;
     }
 

@@ -394,7 +394,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1853743784}
         m_TargetAssemblyTypeName: GamestateManager, Assembly-CSharp
-        m_MethodName: LoadPlanningPhase
+        m_MethodName: FirstTimeLoad
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
