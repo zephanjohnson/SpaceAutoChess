@@ -7,14 +7,25 @@ public class InventoryManager : MonoBehaviour
 {
     private InventorySlot[] _inventorySlots;
 
-    public void Awake()
+    public void InitializeInventory()
     {
         _inventorySlots = FindObjectsOfType<InventorySlot>();
         _inventorySlots = _inventorySlots.OrderBy(slot => slot.transform.position.x).ToArray();
+        foreach (var slot in _inventorySlots)
+        {
+            Debug.Log("Collectible null: " + slot.Collectible == null);
+            Debug.Log("Slot is occupied: " + slot.IsOccupied);
+            if (slot.Collectible == null)
+                slot.IsOccupied = false;
+        }
     }
 
     public void AddToInventorySlot(Collectible col)
     {
+        if (col == null)
+            return;
+        if (_inventorySlots == null) 
+            InitializeInventory();
         foreach (var slot in _inventorySlots)
         {
             if (col.IsInInventory)
@@ -45,6 +56,17 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public void LoadInventoryState(List<Collectible> prevInventoryState)
+    {
+        if (prevInventoryState == null || prevInventoryState.Count == 0) 
+            return;
+        
+        foreach (var collectible in prevInventoryState)
+        {
+            AddToInventorySlot(collectible);
+        }
+    }
+
     private void CombineUpgradeableAllies()
     {
         Dictionary<string, List<int>> allyIndexMap = new Dictionary<string, List<int>>();
@@ -53,8 +75,8 @@ public class InventoryManager : MonoBehaviour
             var slot = _inventorySlots[i];
 
             // Skip slot if it isn't occupied
-            if (!slot.IsOccupied) { continue; }
-
+            if (!slot.IsOccupied || slot.Collectible == null) { continue; }
+            
             // Update ally map with slot index of each matching ally found
             if (allyIndexMap.Keys.Contains(slot.Collectible.Data.Name))
             {

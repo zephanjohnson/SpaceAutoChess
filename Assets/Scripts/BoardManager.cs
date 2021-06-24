@@ -14,7 +14,7 @@ public class BoardManager : MonoBehaviour
 
     private BoardSlot[,] _boardSlots = new BoardSlot[NUM_COLUMNS, NUM_ROWS];
 
-    public void Awake()
+    public void InitializeBoard()
     {
         for (int column = 0; column < NUM_COLUMNS; column++) {
             for (int row = 0; row < NUM_ROWS; row++) {
@@ -26,6 +26,16 @@ public class BoardManager : MonoBehaviour
                 _boardSlots[column, row] = boardSlot;
             }
         }
+    }
+
+    public BoardSlot[,] GetBoardState()
+    {
+        return _boardSlots;
+    }
+    
+    public void LoadBoardState(BoardSlot[,] boardSlotsToLoad)
+    {
+        _boardSlots = boardSlotsToLoad;
     }
 
     public void Highlight(Vector2 coordinate, Color color) {

@@ -6,25 +6,25 @@ public class ButtonBehaviors : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    private LevelProgressionManager _levelProgressionManager;
+    private GamestateManager _gamestateManager;
     void Start()
     {
-        _levelProgressionManager = (LevelProgressionManager) GameObject.FindObjectOfType(typeof(LevelProgressionManager));
+        _gamestateManager = (GamestateManager) GameObject.FindObjectOfType(typeof(GamestateManager));
     }
 
     // Update is called once per frame
     public void CallCompleteLevel()
     {
-        _levelProgressionManager.CompleteLevel();
+        _gamestateManager.CompleteLevel();
     }
     
     public void CallLoadAutoplayPhase()
     {
-        _levelProgressionManager.LoadAutoplayPhase();
+        _gamestateManager.LoadAutoplayPhase();
     }
 
     public void CallLoseLevel()
     {
-        _levelProgressionManager.LoseLevel();
+        _gamestateManager.LoseLevel();
     }
 }

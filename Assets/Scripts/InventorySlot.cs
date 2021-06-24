@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class InventorySlot : MonoBehaviour
 {
-    [SerializeProperty("IsOccupied")]
-    public bool isOccupied;
-    public bool IsOccupied { get { return _isOccupied; } }
-    private bool _isOccupied;
+    [SerializeProperty("IsOccupied")] 
+    public bool IsOccupied;
     public Collectible Collectible;
 
     public void Assign(Collectible col)
     {
-        _isOccupied = true;
+        IsOccupied = true;
         Collectible = col;
         col.transform.SetParent(transform);
         col.transform.SetAsFirstSibling();
@@ -21,7 +19,7 @@ public class InventorySlot : MonoBehaviour
 
     public void Release()
     {
-        _isOccupied = false;
+        IsOccupied = false;
         Destroy(Collectible.gameObject);
     }
 }

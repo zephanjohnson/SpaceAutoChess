@@ -2,29 +2,42 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class GamestateManager : MonoBehaviour
 {
     /// The inventory manager for the game objects
+    [SerializeField]
     private InventoryManager _inventoryManager;
+    [SerializeField]
     private BoardManager _boardManager;
+
+    [SerializeField] 
+    private GameObject _startingShip;
+
+    [SerializeField] 
+    private LevelProgressionManager _levelProgressionManager;
+
+    [SerializeField]
+    private List<Collectible> prevInventoryState = null;
+    private BoardSlot[,] prevBoardState = null;
 
     //internal representation of the inventory and board
     private Inventory _inventory = new Inventory();
     private Board _board = new Board();
+    [SerializeField]
+    private bool firstStart = true;
+    
     
     //This is the currently selected collectible that is waiting to be placed.
     private Collectible selectedCollectible;
     private List<Vector2> highlightedBoardSlots;
-
-    private void Awake()
-    {
-        _inventoryManager = FindObjectOfType<InventoryManager>();
-        _boardManager = FindObjectOfType<BoardManager>();
-    }
-
+    
+    public int Level = 1;
+    
     public void Start()
     {
         DontDestroyOnLoad(this);
@@ -32,18 +45,24 @@ public class GamestateManager : MonoBehaviour
     //call at the end of every planning phase so we can rollback if the player loses
     public void SaveCurrentGameState()
     {
-        //save all current ship positions on the board
-        //save state of the inventory
-        //save current level (to be used in the loader to load the correct scene)
+        prevBoardState = _boardManager.GetBoardState();
+        prevInventoryState = new List<Collectible>(inventory.Collectibles);
+        //Update IsInInventory since the collectibles will have to be re-added to the inventory on scene transition
+        if (prevInventoryState != null)
+            foreach (var col in prevInventoryState)
+                col.IsInInventory = false;
     }
 
     //call if the player loses
+    //load all current ship positions on the board
+    //restore the health of all ships
+    //load state of the inventory
+    //load the correct level's planning phase
     public void LoadPreviousGameState()
     {
-        //load all current ship positions on the board
-        //restore the health of all ships
-        //load state of the inventory
-        //load the correct level's planning phase
+        _inventoryManager.InitializeInventory();
+        _boardManager.LoadBoardState(prevBoardState);
+        _inventoryManager.LoadInventoryState(prevInventoryState);
     }
 
     //called when you pick up a new collectible
@@ -190,6 +209,42 @@ public class GamestateManager : MonoBehaviour
         // TODO Add path for placing non-ally
 
         return false;
+    }
+
+    public void FirstTimeLoad()
+    {
+        SceneManager.LoadScene("Prep");
+        SceneManager.LoadScene("Planning");
+        _boardManager.InitializeBoard();
+        GameObject startingShip = GameObject.Instantiate(_startingShip);
+        startingShip.transform.position = new Vector3(0, 0, 0);
+    }
+    public void LoadPlanningPhase()
+    {
+        SceneManager.LoadScene("Planning");
+        LoadPreviousGameState();
+        //Enter the planning phase, this should call LoadPreviousGameState and transition us to the layout scene
+    }
+
+    public void CompleteLevel()
+    {
+        Level += 1;
+        SaveCurrentGameState();
+        LoadPlanningPhase();
+    }
+
+    public void LoseLevel()
+    {
+        LoadPlanningPhase();
+    }
+
+    public void LoadAutoplayPhase()
+    {
+        SceneManager.LoadScene("Autoplay");
+        _inventoryManager.InitializeInventory();
+        _inventoryManager.LoadInventoryState(prevInventoryState);
+        //Load the autoplayPhase that corresponds to the current level. need to figure out some way to do this that doesn't suck. if we're doing procedural stuff
+        //then we need only one level, 
     }
 
 
