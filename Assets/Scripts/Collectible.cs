@@ -18,7 +18,7 @@ public struct CollectibleData
     public string UpgradeKey;
     public int Level;
     public CollectibleType Type;
-    public string ResourcePath;
+    public string IconResourcePath;
 }
 
 public class Collectible : MonoBehaviour

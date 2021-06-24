@@ -7,6 +7,7 @@ public class InventorySlot : MonoBehaviour
     [SerializeProperty("IsOccupied")] 
     public bool IsOccupied;
     public Collectible Collectible;
+    public int Index;
 
     public void Assign(Collectible col)
     {

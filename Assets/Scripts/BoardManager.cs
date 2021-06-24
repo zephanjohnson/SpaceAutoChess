@@ -14,13 +14,20 @@ public class BoardManager : MonoBehaviour
 
     private BoardSlot[,] _boardSlots = new BoardSlot[NUM_COLUMNS, NUM_ROWS];
 
+    public Vector3 SpawnLocation = new Vector3(-8, -2, 0);
+    private Transform _slotsTransform;
+
     public void InitializeBoard()
     {
+
+        var boardSlots = new GameObject("BoardSlots");
+        _slotsTransform = boardSlots.transform;
+
         for (int column = 0; column < NUM_COLUMNS; column++) {
             for (int row = 0; row < NUM_ROWS; row++) {
                 var go = Instantiate(Resources.Load("BoardSlot"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-                go.transform.SetParent(this.transform);
-                go.transform.localPosition = new Vector3(column * ColumnSpacing, row * RowSpacing, 0);
+                go.transform.SetParent(_slotsTransform);
+                go.transform.localPosition = new Vector3(column * ColumnSpacing, row * RowSpacing, 0) + SpawnLocation;
                 var boardSlot = go.GetComponent<BoardSlot>();
                 boardSlot.Coordinate = new Vector2(column, row);
                 _boardSlots[column, row] = boardSlot;

@@ -27,7 +27,7 @@ public struct AllyData
                 UpgradeKey = UpgradeKey,
                 Level = Level,
                 Type = Type,
-                ResourcePath = ResourcePath,
+                IconResourcePath = IconResourcePath,
             };
         }
     }

@@ -32,8 +32,12 @@ public class AllySpaceObject : SpaceObject
     protected Vector2 bulletPos;
     protected float nextFire;
 
+    private GamestateManager _gamestateManager;
+
     void Awake()
     {
+        _gamestateManager = FindObjectOfType<GamestateManager>();
+
         MaxHealth = BASE_HEALTH;
         CurrentHealth = MaxHealth;
         GridPosition = new Vector2(0,0);
@@ -53,6 +57,35 @@ public class AllySpaceObject : SpaceObject
     {
         rb = GetComponent<Rigidbody2D>();
         startPosition = rb.transform.position;
+    }
+
+    /*
+    * executed at fixed time steps (0.02 default). Use this for Unity physics
+    */
+    void FixedUpdate()
+    {
+        if (_gamestateManager.State == GameState.Autoplay) {
+            //change velocity to calculated moving vector
+            rb.velocity = new Vector2(moveV.x, moveV.y) * (MovementVelocity * .25f);
+        }
+    }
+
+    /*
+     * Method executed every frame
+    */
+    void Update()
+    {
+        if (_gamestateManager.State == GameState.Autoplay)
+        {
+
+            Oscillate();
+            Shoot();
+        }
+    }
+
+    private void OnMouseDown()
+    {
+        CurrentHealth -= 5;
     }
 
 
@@ -110,29 +143,5 @@ public class AllySpaceObject : SpaceObject
             requestedPosition = position;
         }
 
-    }
-
-
-    /*
-    * executed at fixed time steps (0.02 default). Use this for Unity physics
-    */
-    void FixedUpdate()
-    {
-        //change velocity to calculated moving vector
-        rb.velocity = new Vector2(moveV.x, moveV.y) * (MovementVelocity *.25f);
-    }
-
-    /*
-     * Method executed every frame
-    */
-    void Update()
-    {
-        Oscillate();
-        Shoot();
-    }
-
-    private void OnMouseDown()
-    {
-        CurrentHealth -= 5;
     }
 }

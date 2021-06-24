@@ -7,8 +7,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
+public enum GameState
+{
+    MainMenu,
+    Pause,
+    Planning,
+    PreAutoPlay,
+    Autoplay,
+    PostAutoPlay,
+    Unknown,
+}
+
 public class GamestateManager : MonoBehaviour
 {
+    public static GamestateManager Instance;
+    public GameState State;
+
     /// The inventory manager for the game objects
     [SerializeField]
     private InventoryManager _inventoryManager;
@@ -38,6 +52,20 @@ public class GamestateManager : MonoBehaviour
     
     public int Level = 1;
     
+
+    private void Awake()
+    {
+        if (Instance)
+        {
+            Destroy(gameObject);
+        }
+        else {
+            Instance = this;
+        }
+
+        SceneManager.sceneLoaded += OnSceneChange;
+    }
+
     public void Start()
     {
         DontDestroyOnLoad(this);
@@ -247,6 +275,22 @@ public class GamestateManager : MonoBehaviour
         //then we need only one level, 
     }
 
+    private void OnSceneChange(Scene scene, LoadSceneMode loadSceneMode) {
+        switch (scene.name) {
+            case "Start":
+                State = GameState.MainMenu;
+                break;
+            case "Autoplay":
+                State = GameState.PreAutoPlay;
+                break;
+            case "Planning":
+                State = GameState.Planning;
+                break;
+            default:
+                State = GameState.Unknown;
+                break;
+        }
+    }
 
     public class Inventory
     {
