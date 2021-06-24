@@ -34,6 +34,9 @@ public class BoardSlot : MonoBehaviour
 
         if (instantiateAlly) {
             var go = Instantiate(Resources.Load("Red Spaceship"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            var spaceObject = go.GetComponent<AllySpaceObject>();
+            var allyData = AllyDataLibrary.Allies[col.Data.Key];
+            spaceObject.SetData(allyData);
             go.transform.SetParent(transform);
             go.transform.localPosition = new Vector3(0, 0, -1);
             Ship = go.GetComponent<AllySpaceObject>();

@@ -5,16 +5,22 @@ using UnityEngine.Events;
 
 public class AllySpaceObject : SpaceObject
 {
-    public static int BASE_HEALTH = 50;
-    public static int BULLET_VELOCITY = 10;
-    public static int BULLET_FIRE_RATE_PER_SECOND = 5;
-    public static int BULLET_DAMAGE = 3;
-    public static int MOVEMENT_VELOCITY = 1;
-    public static int MOVEMENT_RANGE = 2;
 
-    public int BulletVelocity = BULLET_VELOCITY;
-    public int BulletFireRate = BULLET_FIRE_RATE_PER_SECOND;
-    public int BulletDamage = BULLET_DAMAGE;
+    public int BulletVelocity;
+    public int BulletFireRate;
+    public int BulletDamage; 
+
+    public void SetData(AllyData allyData)
+    {
+        MaxHealth = allyData.BaseHealth;
+        CurrentHealth = MaxHealth;
+        MovementVelocity = allyData.MovementVelocity;
+        MovementRange = allyData.MovementRange;
+        BulletVelocity = allyData.BulletVelocity;
+        BulletFireRate = allyData.BulletFireRatePerSecond;
+        BulletDamage = allyData.BulletDamage;
+
+    }
 
     /*
      * Variables needed for Oscillations.
@@ -37,12 +43,8 @@ public class AllySpaceObject : SpaceObject
     void Awake()
     {
         _gamestateManager = FindObjectOfType<GamestateManager>();
-
-        MaxHealth = BASE_HEALTH;
-        CurrentHealth = MaxHealth;
+     
         GridPosition = new Vector2(0,0);
-        MovementVelocity = MOVEMENT_VELOCITY;
-        MovementRange = MOVEMENT_RANGE;
 
         OnCurrentHealthChange += (int oldValue, int current) =>
         {
@@ -57,6 +59,10 @@ public class AllySpaceObject : SpaceObject
     {
         rb = GetComponent<Rigidbody2D>();
         startPosition = rb.transform.position;
+        rb.isKinematic = true;
+        nextFire= 1.0f / (float)BulletFireRate;
+        Debug.Log("Bullet Fire Rate:" +BulletFireRate);
+        Debug.Log("Initial fire rate: " + nextFire);
     }
 
     /*
@@ -94,15 +100,17 @@ public class AllySpaceObject : SpaceObject
     */
     void Shoot()
     {
-        float fireRate = 1/(float)BulletFireRate;
-        if (Time.time > nextFire)
+        nextFire -= Time.deltaTime;
+        
+        if (nextFire <= 0)
         {
-            nextFire = Time.time + fireRate;
+            Debug.Log("Fired bullet");
+            nextFire = 1.0f / (float)BulletFireRate;
             bulletPos = transform.position;
             bulletPos += new Vector2(+1f, -.43f);
             
             var bullet = Instantiate(Bullet, transform.position, Quaternion.identity);
-            bullet.GetComponent<BulletBehavior>().velX = BulletVelocity;
+            bullet.GetComponent<BulletBehavior>().speed = BulletVelocity;
         }
     }
 
@@ -113,8 +121,9 @@ public class AllySpaceObject : SpaceObject
             transform.position.y,
             transform.position.z);
 
-        float maxRangeUp = startPosition.y + MovementRange / (MovementRange * 2f) ;
-        float maxRangeDown = startPosition.y - MovementRange/ (MovementRange * 2f) ;
+        
+        float maxRangeUp = startPosition.y + (1- 1/MovementRange); /// (MovementRange * 2f) ;
+        float maxRangeDown = startPosition.y - (1-1/MovementRange); /// (MovementRange * 2f) ;
      
         float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -4f, 4f);
         float clampedMaxRangeDown = Mathf.Clamp(maxRangeDown, -4f, 4f);
@@ -144,4 +153,17 @@ public class AllySpaceObject : SpaceObject
         }
 
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.name.Contains("Board"))
+            Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.name.Contains("Board"))
+            Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+    }
 }
+
