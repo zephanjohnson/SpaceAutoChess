@@ -20,7 +20,6 @@ public enum GameState
 
 public class GamestateManager : MonoBehaviour
 {
-    public static GamestateManager Instance;
     public GameState State;
 
     /// The inventory manager for the game objects
@@ -28,6 +27,8 @@ public class GamestateManager : MonoBehaviour
     private InventoryManager _inventoryManager;
     [SerializeField]
     private BoardManager _boardManager;
+    [SerializeField]
+    private GameBoardManager _gameBoardManager;
 
     [SerializeField] 
     private GameObject _startingShip;
@@ -65,12 +66,12 @@ public class GamestateManager : MonoBehaviour
     //call at the end of every planning phase so we can rollback if the player loses
     public void SaveCurrentGameState()
     {
-        prevBoardState = _boardManager.GetBoardState();
-        prevInventoryState = new List<Collectible>(inventory.Collectibles);
+        //prevBoardState = _boardManager.GetBoardState();
+        //prevInventoryState = new List<Collectible>(inventory.Collectibles);
         //Update IsInInventory since the collectibles will have to be re-added to the inventory on scene transition
-        if (prevInventoryState != null)
-            foreach (var col in prevInventoryState)
-                col.IsInInventory = false;
+        //if (prevInventoryState != null)
+        //    foreach (var col in prevInventoryState)
+        //        col.Location = CollectibleLocation.None;
     }
 
     //call if the player loses
@@ -80,16 +81,17 @@ public class GamestateManager : MonoBehaviour
     //load the correct level's planning phase
     public void LoadPreviousGameState()
     {
-        _inventoryManager.InitializeInventory();
-        _boardManager.LoadBoardState(prevBoardState);
-        _inventoryManager.LoadInventoryState(prevInventoryState);
+        //_inventoryManager.InitializeInventory();
+        //_boardManager.LoadBoardState(prevBoardState);
+        //_inventoryManager.LoadInventoryState(prevInventoryState);
     }
 
     //called when you pick up a new collectible
     public void AddToInventory(Collectible collectible)
     {
-        _inventory.Collectibles.Add(collectible);
-        _inventoryManager.AddToInventorySlot(collectible);
+        _gameBoardManager.AddToInventory(collectible.Data);
+        //_inventory.Collectibles.Add(collectible);
+        //_inventoryManager.AddToInventorySlot(collectible);
     }
 
     //called when collectible is removed
@@ -128,13 +130,23 @@ public class GamestateManager : MonoBehaviour
     //places the selected ship in the slot closest to the click.
     public void PlaceCollectible()
     {
-        _boardManager.AddToBoardSlot(highlightedBoardSlots, selectedCollectible);
-        _inventoryManager.RemoveFromInventorySlot(selectedCollectible);
-        selectedCollectible = null;
+        //switch (selectedCollectible.Location)
+        //{
+        //    case CollectibleLocation.Board:
+        //        _boardManager.AddToBoardSlot(highlightedBoardSlots, selectedCollectible);
+        //        _boardManager.RemoveFromBoardSlot(selectedCollectible);
+        //        break;
+        //    case CollectibleLocation.Inventory:
+        //        _boardManager.AddToBoardSlot(highlightedBoardSlots, selectedCollectible);
+        //        _inventoryManager.RemoveFromInventorySlot(selectedCollectible);
+        //        break;
 
-        //When a collectible moves from inventory to the board it changes to the model of the ship instead of an icon,
-        //It disapears if it is an item because it's attached to a ship
-        //It changes back to an icon in the inventory if it was on the board before
+        //}
+        //selectedCollectible = null;
+
+        ////When a collectible moves from inventory to the board it changes to the model of the ship instead of an icon,
+        ////It disapears if it is an item because it's attached to a ship
+        ////It changes back to an icon in the inventory if it was on the board before
     }
 
     public void HighlightSlots(Vector2 slotCoordinate)
@@ -152,7 +164,7 @@ public class GamestateManager : MonoBehaviour
             var color = canPlaceAllyShip ? Color.green : Color.red;
             foreach (var coordinate in highlightedBoardSlots)
             {
-                _boardManager.Highlight(coordinate, color);
+                //_boardManager.Highlight(coordinate, color);
 
             }
         }
@@ -161,10 +173,10 @@ public class GamestateManager : MonoBehaviour
             switch(data.Type)
             {
                 case CollectibleType.Item:
-                    _boardManager.Highlight(slotCoordinate, Color.blue);
+                    //_boardManager.Highlight(slotCoordinate, Color.blue);
                     break;
                 default:
-                    _boardManager.Highlight(slotCoordinate, Color.white);
+                    //_boardManager.Highlight(slotCoordinate, Color.white);
                     break;
             }
         }
@@ -178,7 +190,7 @@ public class GamestateManager : MonoBehaviour
         var color = Color.white;
         foreach (var coordinate in highlightedBoardSlots)
         {
-            _boardManager.Highlight(coordinate, color);
+            //_boardManager.Highlight(coordinate, color);
         }
     }
 
@@ -219,7 +231,7 @@ public class GamestateManager : MonoBehaviour
             // go through each slot in range and see if it is occupied
             foreach(var coordinate in coordinates)
             {
-                canPlaceAllyShip = canPlaceAllyShip && !_boardManager.IsSlotOccupied(coordinate);
+                //canPlaceAllyShip = canPlaceAllyShip && !_boardManager.IsSlotOccupied(coordinate);
             }
 
             // Color each slot
@@ -233,10 +245,10 @@ public class GamestateManager : MonoBehaviour
 
     public void FirstTimeLoad()
     {
-        SceneManager.LoadScene("Prep");
+        //SceneManager.LoadScene("Prep");
         SceneManager.LoadScene("Planning");
-        _boardManager.InitializeBoard();
         GameObject startingShip = GameObject.Instantiate(_startingShip);
+        startingShip.GetComponent<Collectible>().Location = CollectibleLocation.Field;
         startingShip.transform.position = new Vector3(0, 0, 0);
     }
     public void LoadPlanningPhase()
@@ -261,8 +273,8 @@ public class GamestateManager : MonoBehaviour
     public void LoadAutoplayPhase()
     {
         SceneManager.LoadScene("Autoplay");
-        _inventoryManager.InitializeInventory();
-        _inventoryManager.LoadInventoryState(prevInventoryState);
+        //_gameBoardManager.Initialize();
+        //_inventoryManager.LoadInventoryState(prevInventoryState);
         //Load the autoplayPhase that corresponds to the current level. need to figure out some way to do this that doesn't suck. if we're doing procedural stuff
         //then we need only one level, 
     }
@@ -274,9 +286,11 @@ public class GamestateManager : MonoBehaviour
                 break;
             case "Autoplay":
                 State = GameState.PreAutoPlay;
+                _gameBoardManager.Initialize();
                 break;
             case "Planning":
                 State = GameState.Planning;
+                _gameBoardManager.Initialize();
                 break;
             default:
                 State = GameState.Unknown;
@@ -286,11 +300,11 @@ public class GamestateManager : MonoBehaviour
 
     public class Inventory
     {
-        public List<Collectible> Collectibles = new List<Collectible>();
+        //public List<Collectible> Collectibles = new List<Collectible>();
     }
 
     public class Board
     {
-        private AllySpaceObject[,] Ships = new AllySpaceObject[BoardManager.NUM_COLUMNS, BoardManager.NUM_ROWS];
+        //private AllySpaceObject[,] Ships = new AllySpaceObject[BoardManager.NUM_COLUMNS, BoardManager.NUM_ROWS];
     }
 }

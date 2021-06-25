@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3052939880275544710}
   - component: {fileID: 3052939880275544711}
   - component: {fileID: 3052939880275544762}
+  - component: {fileID: 6495370027479500397}
   m_Layer: 0
   m_Name: GameStateManager
   m_TagString: Untagged
@@ -46,10 +47,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077a18f5b4f6e49f4ace6c1555d34e6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  State: 0
   _inventoryManager: {fileID: 3052939880275544711}
   _boardManager: {fileID: 3052939880275544710}
+  _gameBoardManager: {fileID: 6495370027479500397}
   _startingShip: {fileID: 4458130225506202876, guid: a431a4d59e7fa3b488ba7dd3b6f50e80, type: 3}
   _levelProgressionManager: {fileID: 3052939880275544762}
+  prevInventoryState: []
+  firstStart: 1
   Level: 1
 --- !u!114 &3052939880275544710
 MonoBehaviour:
@@ -65,6 +70,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ColumnSpacing: 3
   RowSpacing: 1.2
+  SpawnLocation: {x: -8, y: -2, z: 0}
 --- !u!114 &3052939880275544711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,3 +95,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ba542ede8bd7714a824215d636f8ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6495370027479500397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3052939880275544763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34137536c2eb4ab8b225e8bde44eba5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BoardColumnSpacing: 3
+  BoardRowSpacing: 1.2
+  InventorySlotSpacing: 2
+  InventorySpawnLocation: {x: -8, y: -2, z: 0}

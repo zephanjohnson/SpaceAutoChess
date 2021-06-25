@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   collectibleName: 
-  IsInInventory: 0
+  Location: 1
 --- !u!61 &4458130225506202864
 BoxCollider2D:
   m_ObjectHideFlags: 0

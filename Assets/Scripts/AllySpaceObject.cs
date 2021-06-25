@@ -5,7 +5,6 @@ using UnityEngine.Events;
 
 public class AllySpaceObject : SpaceObject
 {
-
     public int BulletVelocity;
     public int BulletFireRate;
     public int BulletDamage; 
@@ -91,7 +90,7 @@ public class AllySpaceObject : SpaceObject
 
     private void OnMouseDown()
     {
-        CurrentHealth -= 5;
+        //_gamestateManager.SelectCollectible(Collectible);
     }
 
 

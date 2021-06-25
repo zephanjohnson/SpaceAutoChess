@@ -11,6 +11,14 @@ public enum CollectibleType
     None,
 }
 
+public enum CollectibleLocation
+{
+    None,
+    Field,
+    Inventory,
+    Board,
+}
+
 public struct CollectibleData
 {
     public string Name;
@@ -19,6 +27,14 @@ public struct CollectibleData
     public int Level;
     public CollectibleType Type;
     public string IconResourcePath;
+
+    public CollectibleData GetUpgrade()
+    {
+        if(UpgradeKey == null || UpgradeKey.Length == 0){ return this; }
+
+        var allyData = AllyDataLibrary.Allies[UpgradeKey];
+        return allyData.Data;
+    }
 }
 
 public class Collectible : MonoBehaviour
@@ -27,7 +43,7 @@ public class Collectible : MonoBehaviour
     public string collectibleName;
     public string CollectibleName { get { return Data.Name; } }
     public CollectibleData Data;
-    public bool IsInInventory;
+    public CollectibleLocation Location;
     private GamestateManager gm;
 
     public void Awake()
@@ -47,23 +63,20 @@ public class Collectible : MonoBehaviour
         Data = data;
     }
 
-    public void Upgrade()
-    {
-        var allyData = AllyDataLibrary.Allies[Data.UpgradeKey];
-        Data = allyData.Data;
-        var sprite = Resources.Load<Sprite>(allyData.IconResourcePath);
-        GetComponent<SpriteRenderer>().sprite = sprite;
-    }
+    //public void Upgrade()
+    //{
+    //    var allyData = AllyDataLibrary.Allies[Data.UpgradeKey];
+    //    Data = allyData.Data;
+    //    var sprite = Resources.Load<Sprite>(allyData.IconResourcePath);
+    //    GetComponent<SpriteRenderer>().sprite = sprite;
+    //}
 
     public void OnMouseDown()
     {
-        if (IsInInventory)
+        if (Location == CollectibleLocation.Field || Location == CollectibleLocation.None)
         {
-            gm.SelectCollectible(this);
-        }
-        else {
             gm.AddToInventory(this);
-            IsInInventory = true;
+            Destroy(this.gameObject);
         }
     }
 
