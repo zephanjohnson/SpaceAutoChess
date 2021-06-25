@@ -32,7 +32,7 @@ public class GamestateManager : MonoBehaviour
     private LevelProgressionManager _levelProgressionManager;
 
     [SerializeField]
-    private GameBoardState prevInventoryState;
+    private GameBoardState prevBoardState;
 
     [SerializeField]
     private bool firstStart = true;
@@ -56,9 +56,9 @@ public class GamestateManager : MonoBehaviour
     }
 
     //call at the end of every planning phase so we can rollback if the player loses
-    public void SaveCurrentGameState()
+    public void SaveCurrentGameState(bool firstLoad)
     {
-        prevInventoryState = _gameBoardManager.GetState();
+        prevBoardState = _gameBoardManager.GetState(firstLoad);
     }
 
     //call if the player loses
@@ -66,9 +66,14 @@ public class GamestateManager : MonoBehaviour
     //restore the health of all ships
     //load state of the inventory
     //load the correct level's planning phase
-    public void LoadPreviousGameState()
+    public void LoadAutoplayGameState()
     {
-        _gameBoardManager.LoadState(prevInventoryState);
+        _gameBoardManager.LoadAutoplayState(prevBoardState);
+    }
+
+    public void LoadPlanningGameState()
+    {
+        _gameBoardManager.LoadPlanningState(prevBoardState);
     }
 
     //called when you pick up a new collectible
@@ -223,19 +228,19 @@ public class GamestateManager : MonoBehaviour
         GameObject startingShip = GameObject.Instantiate(_startingShip);
         startingShip.GetComponent<Collectible>().Location = CollectibleLocation.Field;
         startingShip.transform.position = new Vector3(0, 0, 0);
-        SaveCurrentGameState();
+        SaveCurrentGameState(true);
     }
     public void LoadPlanningPhase()
     {
         SceneManager.LoadScene("Planning");
-        LoadPreviousGameState();
+        LoadPlanningGameState();
         //Enter the planning phase, this should call LoadPreviousGameState and transition us to the layout scene
     }
 
     public void CompleteLevel()
     {
         Level += 1;
-        SaveCurrentGameState();
+        SaveCurrentGameState(false);
         LoadPlanningPhase();
     }
 
@@ -247,11 +252,11 @@ public class GamestateManager : MonoBehaviour
     public void LoadAutoplayPhase()
     {
         // Save the planning scene
-        SaveCurrentGameState();
+        SaveCurrentGameState(false);
         SceneManager.LoadScene("Autoplay");
 
         // Load the state from planning when scene changes
-        LoadPreviousGameState();
+        LoadAutoplayGameState();
     }
 
     private void OnSceneChange(Scene scene, LoadSceneMode loadSceneMode) {
@@ -261,11 +266,12 @@ public class GamestateManager : MonoBehaviour
                 break;
             case "Autoplay":
                 State = GameState.PreAutoPlay;
-                _gameBoardManager.Initialize(prevInventoryState);
+                _gameBoardManager.Initialize(prevBoardState);
                 break;
             case "Planning":
                 State = GameState.Planning;
-                _gameBoardManager.Initialize(prevInventoryState);
+                _gameBoardManager.Initialize(prevBoardState);
+                _gameBoardManager.LoadPlanningState(prevBoardState);
                 break;
             default:
                 State = GameState.Unknown;

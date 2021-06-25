@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.PlayerLoop;
 
 public struct GameBoardState
 {
@@ -98,26 +99,27 @@ public class GameBoardManager : MonoBehaviour
             }
         }
 
-        LoadState(state);
+        LoadAutoplayState(state);
     }
 
-    public GameBoardState GetState()
+    public GameBoardState GetState(bool firstLoad)
     {
         var retval = new GameBoardState();
         retval.BoardState = new List<BoardSlotState>();
         retval.InventoryState = new List<InventorySlotState>();
-
-        foreach (var slot in _boardSlots)
+        
+        
+            foreach (var slot in _boardSlots)
         {
             var state = new BoardSlotState();
-
-            if (slot) {
+            if (!firstLoad)
+            {
                 state.CoordinateX = slot.Coordinate_X;
                 state.CoordinateY = slot.Coordinate_Y;
                 state.Data = slot.CollectibleData;
                 state.IsOccupied = slot.IsOccupied;
             }
-            
+
             retval.BoardState.Add(state);
         }
 
@@ -137,14 +139,51 @@ public class GameBoardManager : MonoBehaviour
         return retval;
     }
 
-    public void LoadState(GameBoardState state)
+    public void LoadPlanningState(GameBoardState state)
+    {
+        // Populate Inventory
+        foreach (var slotState in state.InventoryState)
+        {
+            if (slotState.IsOccupied)
+            {
+                UpdateInventorySlot(slotState.Data, slotState.Index);
+            }
+        }
+
+        Debug.Log(state.BoardState.Count);
+        foreach (var boardState in state.BoardState)
+        {
+            if (boardState.IsOccupied)
+            {
+                Debug.Log(boardState.CoordinateX);
+                UpdateBoardSlot(boardState.Data, boardState.CoordinateX, boardState.CoordinateY);
+                var slot = _boardSlots[boardState.CoordinateX, boardState.CoordinateY];
+                slot.CollectibleData = boardState.Data;
+                slot.Coordinate_X = boardState.CoordinateX;
+                slot.Coordinate_Y = boardState.CoordinateY;
+                slot.IsOccupied = boardState.IsOccupied;
+                _boardSlots[slot.Coordinate_X, slot.Coordinate_Y] = slot;
+            }
+        }
+    }
+        
+    public void LoadAutoplayState(GameBoardState state)
     {
         // Instantiate Ships
         if (_gamestateManager.State == GameState.PreAutoPlay)
         {
             foreach (var boardState in state.BoardState)
+            {
                 if (boardState.IsOccupied)
                     LoadShip(boardState);
+                var slot = _boardSlots[boardState.CoordinateX, boardState.CoordinateY];
+                slot.CollectibleData = boardState.Data;
+                slot.Coordinate_X = boardState.CoordinateX;
+                slot.Coordinate_Y = boardState.CoordinateY;
+                slot.IsOccupied = boardState.IsOccupied;
+                _boardSlots[slot.Coordinate_X, slot.Coordinate_Y] = slot;
+            }
+                
         }
 
         // Populate Inventory
@@ -164,7 +203,7 @@ public class GameBoardManager : MonoBehaviour
          var spaceObject = go.GetComponent<AllySpaceObject>();
          var allyData = AllyDataLibrary.Allies[slot.Data.Key];
          spaceObject.SetData(allyData);
-         go.transform.position = new Vector3(boardTopLeft.x + 2.5f * slot.CoordinateX, boardTopLeft.y - 1.5f * slot.CoordinateY, -1);
+         go.transform.position = new Vector3(boardTopLeft.x + 2.5f * slot.CoordinateX, boardTopLeft.y - 1.25f * slot.CoordinateY, -1);
      }
 
     public void PlaceCollectible()
@@ -183,6 +222,16 @@ public class GameBoardManager : MonoBehaviour
             slot.Assign(data);
             break;
         }
+
+        CombineUpgradeableAllies();
+    }
+    
+    public void UpdateBoardSlot(CollectibleData data, int corX, int corY)
+    {
+        Debug.Log("UpdateBoardSlot called");
+        var slot = _boardSlots[corX, corY];
+        slot.Release();
+        slot.Assign(data);
 
         CombineUpgradeableAllies();
     }
