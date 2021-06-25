@@ -67,7 +67,7 @@ public class AllySpaceObject : SpaceObject
 
         //Number of ship rows
         int numberOfSpaceShips = 6; //Hardcoded for now
-        float sizeOfSpaceShip = (float)(GetComponent<Collider2D>().bounds.size.y);
+        float sizeOfSpaceShip = (float)(GetComponent<BoxCollider2D>().bounds.size.y);
 
         //Units per pixel
         Vector3 p1 = Camera.main.ScreenToWorldPoint(Vector3.zero);
@@ -76,6 +76,9 @@ public class AllySpaceObject : SpaceObject
         //Total Units
         //Somehow below fuzzy logic works 
         float totalUnits = Screen.height * unitsPerPixel;
+
+        //Hardcode ship size
+        sizeOfSpaceShip = .8f;
 
         screenFactor = totalUnits / (sizeOfSpaceShip * numberOfSpaceShips);
         Debug.Log("Number of SpaceShips " + numberOfSpaceShips + " Screen Height " + Screen.height + "size of ship " + sizeOfSpaceShip + "screenFactor " + screenFactor);
@@ -133,40 +136,6 @@ public class AllySpaceObject : SpaceObject
 
     void Oscillate()
     {
-        //Vector3 position = new Vector3(transform.position.x,
-        //    transform.position.y,
-        //    transform.position.z);
-
-        //float maxRangeUp = startPosition.y + MovementRange - screenFactor;
-        //float maxRangeDown = startPosition.y - MovementRange + screenFactor;
-
-        //float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -12f, 12f);
-        //float clampedMaxRangeDown = Mathf.Clamp(maxRangeDown, -12f, 12f);
-        //bool bChanged = false;
-
-        //if (bFirstTimeOscillating)
-        //{
-        //    position.y = clampedMaxRangeUp;
-        //    bChanged = true;
-        //    bFirstTimeOscillating = false;
-        //}
-        //else if (clampedMaxRangeUp == requestedPosition.y && transform.position.y >= requestedPosition.y)
-        //{
-        //    position.y = clampedMaxRangeDown;
-        //    bChanged = true;
-        //}
-        //else if (clampedMaxRangeDown == requestedPosition.y && transform.position.y <= requestedPosition.y)
-        //{
-        //    position.y = clampedMaxRangeUp;
-        //    bChanged = true;
-
-        //}
-        //if (bChanged)
-        //{
-        //    moveV = position - transform.position;
-        //    requestedPosition = position;
-        //}
-
         if (dirRight)
             transform.Translate(Vector3.right * MovementVelocity * Time.deltaTime);
         else
