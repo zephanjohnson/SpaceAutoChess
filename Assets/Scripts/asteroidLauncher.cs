@@ -117,10 +117,9 @@ public class asteroidLauncher : MonoBehaviour {
 
     IEnumerator CompleteLevel()
     {
-        _gamestateManager.State = GameState.PostAutoPlay;
-        _gamestateManager.CompleteLevel();
-        didGameEnd = false;
         yield return new WaitForSeconds(5f);
+        _gamestateManager.CompleteLevel();
+
     }
 }
 
