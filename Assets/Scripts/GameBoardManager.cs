@@ -45,6 +45,7 @@ public class GameBoardManager : MonoBehaviour
     private Transform _inventorySlotsTransform;
     private Transform _boardSlotsTransform;
     private GamestateManager _gamestateManager;
+    private GameBoardState _gameBoardState;
 
     public void Awake()
     {
@@ -107,21 +108,27 @@ public class GameBoardManager : MonoBehaviour
         var retval = new GameBoardState();
         retval.BoardState = new List<BoardSlotState>();
         retval.InventoryState = new List<InventorySlotState>();
-        
-        
-            foreach (var slot in _boardSlots)
-        {
-            var state = new BoardSlotState();
-            if (!firstLoad)
-            {
-                state.CoordinateX = slot.Coordinate_X;
-                state.CoordinateY = slot.Coordinate_Y;
-                state.Data = slot.CollectibleData;
-                state.IsOccupied = slot.IsOccupied;
-            }
 
-            retval.BoardState.Add(state);
+        if (_gamestateManager.State == GameState.Autoplay ||
+            _gamestateManager.State == GameState.PostAutoPlay)
+        {
+            retval.BoardState = _gameBoardState.BoardState;
         }
+        else {
+            foreach (var slot in _boardSlots)
+            {
+                var state = new BoardSlotState();
+                if (!firstLoad)
+                {
+                    state.CoordinateX = slot.Coordinate_X;
+                    state.CoordinateY = slot.Coordinate_Y;
+                    state.Data = slot.CollectibleData;
+                    state.IsOccupied = slot.IsOccupied;
+                }
+
+                retval.BoardState.Add(state);
+            }
+        }        
 
         foreach (var slot in _inventorySlots)
         {
@@ -169,6 +176,8 @@ public class GameBoardManager : MonoBehaviour
         
     public void LoadAutoplayState(GameBoardState state)
     {
+        _gameBoardState = state;
+
         // Instantiate Ships
         if (_gamestateManager.State == GameState.PreAutoPlay)
         {
@@ -185,6 +194,14 @@ public class GameBoardManager : MonoBehaviour
             }
                 
         }
+        else {
+            // Populate Board
+            foreach (var boardState in state.BoardState)
+                if (boardState.IsOccupied)
+                    UpdateBoardSlot(boardState.Data, boardState.CoordinateX, boardState.CoordinateY);
+        }
+
+        
 
         // Populate Inventory
         foreach (var slotState in state.InventoryState)
@@ -199,7 +216,7 @@ public class GameBoardManager : MonoBehaviour
      public void LoadShip(BoardSlotState slot)
      {
          Debug.Log("x, y:" + slot.CoordinateX +", " + slot.CoordinateY);
-         var go = Instantiate(Resources.Load("Red Spaceship"), new Vector3(slot.CoordinateY, slot.CoordinateX, 0f), Quaternion.identity) as GameObject;
+         var go = Instantiate(Resources.Load(slot.Data.ResourcePath), new Vector3(slot.CoordinateY, slot.CoordinateX, 0f), Quaternion.Euler(0, 90, -90)) as GameObject;
          var spaceObject = go.GetComponent<AllySpaceObject>();
          var allyData = AllyDataLibrary.Allies[slot.Data.Key];
          spaceObject.SetData(allyData);

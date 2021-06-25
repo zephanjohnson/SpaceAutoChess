@@ -27,6 +27,7 @@ public struct CollectibleData
     public int Level;
     public CollectibleType Type;
     public string IconResourcePath;
+    public string ResourcePath;
 
     public CollectibleData GetUpgrade()
     {

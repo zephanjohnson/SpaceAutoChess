@@ -28,9 +28,6 @@ public class GamestateManager : MonoBehaviour
     [SerializeField] 
     private GameObject _startingShip;
 
-    [SerializeField] 
-    private LevelProgressionManager _levelProgressionManager;
-
     [SerializeField]
     private GameBoardState prevBoardState;
 
