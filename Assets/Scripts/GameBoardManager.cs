@@ -3,6 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+public struct GameBoardState
+{
+    public List<InventorySlotState> InventoryState;
+    public List<BoardSlotState> BoardState;
+}
+
+public struct InventorySlotState
+{
+    public int Index;
+    public CollectibleData Data;
+    public bool IsOccupied;
+}
+
+public struct BoardSlotState
+{
+    public int CoordinateX;
+    public int CoordinateY;
+    public CollectibleData Data;
+    public bool IsOccupied;
+}
+
 public class GameBoardManager : MonoBehaviour
 {
     public float BoardColumnSpacing = 3f;
@@ -27,7 +48,7 @@ public class GameBoardManager : MonoBehaviour
         _gamestateManager = GetComponent<GamestateManager>();
     }
 
-    public void Initialize()
+    public void Initialize(GameBoardState state)
     {
         _canvasTransform = FindObjectOfType<Canvas>().transform;
 
@@ -67,32 +88,75 @@ public class GameBoardManager : MonoBehaviour
                     var drag = tileTransform.GetComponent<Drag>();
                     var slot = tileTransform.GetComponent<GameBoardSlot>();
                     drag.OnSlotChange += slot.OnSlotChange;
+                    slot.Coordinate_X = column;
+                    slot.Coordinate_Y = row;
                     _boardSlots[column, row] = slot;
+
                 }
             }
         }
 
+        LoadState(state);
+    }
+
+    public GameBoardState GetState()
+    {
+        var retval = new GameBoardState();
+        retval.BoardState = new List<BoardSlotState>();
+        retval.InventoryState = new List<InventorySlotState>();
+
+        foreach (var slot in _boardSlots)
+        {
+            var state = new BoardSlotState();
+
+            if (slot) {
+                state.CoordinateX = slot.Coordinate_X;
+                state.CoordinateY = slot.Coordinate_Y;
+                state.Data = slot.CollectibleData;
+                state.IsOccupied = slot.IsOccupied;
+            }
+            
+            retval.BoardState.Add(state);
+        }
+
+        foreach (var slot in _inventorySlots)
+        {
+            var state = new InventorySlotState();
+
+            if (slot) {
+                state.Data = slot.CollectibleData;
+                state.Index = slot.Index;
+                state.IsOccupied = slot.IsOccupied;
+            }
+            
+            retval.InventoryState.Add(state);
+        }
+
+        return retval;
+    }
+
+    public void LoadState(GameBoardState state)
+    {
+        // Instantiate Ships
         if (_gamestateManager.State == GameState.PreAutoPlay)
         {
-            // Instantiate Ships
             for (int column = 0; column < BOARD_NUM_COLUMNS; column++)
             {
                 for (int row = 0; row < BOARD_NUM_ROWS; row++)
                 {
-                   
+
                 }
             }
         }
-    }
 
-    public GameBoardSlot[,] GetState()
-    {
-        return _boardSlots;
-    }
-
-    public void LoadState(GameBoardSlot[,] boardSlotsToLoad)
-    {
-        _boardSlots = boardSlotsToLoad;
+        // Populate Inventory
+        foreach (var slotState in state.InventoryState)
+        {
+            if (slotState.IsOccupied)
+            {
+                UpdateInventorySlot(slotState.Data, slotState.Index);
+            }
+        }
     }
 
     public void PlaceCollectible()
@@ -111,6 +175,15 @@ public class GameBoardManager : MonoBehaviour
             slot.Assign(data);
             break;
         }
+
+        CombineUpgradeableAllies();
+    }
+
+    public void UpdateInventorySlot(CollectibleData data, int index)
+    {
+        var slot = _inventorySlots[index];
+        slot.Release();
+        slot.Assign(data);
 
         CombineUpgradeableAllies();
     }

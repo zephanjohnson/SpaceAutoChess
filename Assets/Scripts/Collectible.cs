@@ -63,14 +63,6 @@ public class Collectible : MonoBehaviour
         Data = data;
     }
 
-    //public void Upgrade()
-    //{
-    //    var allyData = AllyDataLibrary.Allies[Data.UpgradeKey];
-    //    Data = allyData.Data;
-    //    var sprite = Resources.Load<Sprite>(allyData.IconResourcePath);
-    //    GetComponent<SpriteRenderer>().sprite = sprite;
-    //}
-
     public void OnMouseDown()
     {
         if (Location == CollectibleLocation.Field || Location == CollectibleLocation.None)

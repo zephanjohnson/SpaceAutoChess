@@ -3,18 +3,11 @@ using System.Collections;
 using System;
 using UnityEngine.UI;
 
-public enum SlotType
-{
-    Inventory,
-    Board
-}
-
 public class GameBoardSlot : MonoBehaviour
 {
     public CollectibleData CollectibleData;
-    public SlotType Type;
-    //public int Coordinate_X;
-    //public int Coordinate_Y;
+    public int Coordinate_X;
+    public int Coordinate_Y;
     public int Index;
     public bool IsOccupied;
 
