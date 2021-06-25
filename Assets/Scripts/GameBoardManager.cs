@@ -34,6 +34,8 @@ public class GameBoardManager : MonoBehaviour
     public static int BOARD_NUM_ROWS = 6;
     public static int INVENTORY_NUM_SLOTS = 9;
 
+    private Vector2 boardTopLeft = new Vector2(-7.5f, 3.75f);
+
     private GameBoardSlot[,] _boardSlots = new GameBoardSlot[BOARD_NUM_COLUMNS, BOARD_NUM_ROWS];
     private GameBoardSlot[] _inventorySlots = new GameBoardSlot[INVENTORY_NUM_SLOTS];
 
@@ -140,13 +142,9 @@ public class GameBoardManager : MonoBehaviour
         // Instantiate Ships
         if (_gamestateManager.State == GameState.PreAutoPlay)
         {
-            for (int column = 0; column < BOARD_NUM_COLUMNS; column++)
-            {
-                for (int row = 0; row < BOARD_NUM_ROWS; row++)
-                {
-
-                }
-            }
+            foreach (var boardState in state.BoardState)
+                if (boardState.IsOccupied)
+                    LoadShip(boardState);
         }
 
         // Populate Inventory
@@ -158,6 +156,16 @@ public class GameBoardManager : MonoBehaviour
             }
         }
     }
+    
+     public void LoadShip(BoardSlotState slot)
+     {
+         Debug.Log("x, y:" + slot.CoordinateX +", " + slot.CoordinateY);
+         var go = Instantiate(Resources.Load("Red Spaceship"), new Vector3(slot.CoordinateY, slot.CoordinateX, 0f), Quaternion.identity) as GameObject;
+         var spaceObject = go.GetComponent<AllySpaceObject>();
+         var allyData = AllyDataLibrary.Allies[slot.Data.Key];
+         spaceObject.SetData(allyData);
+         go.transform.position = new Vector3(boardTopLeft.x + 2.5f * slot.CoordinateX, boardTopLeft.y - 1.5f * slot.CoordinateY, -1);
+     }
 
     public void PlaceCollectible()
     {
