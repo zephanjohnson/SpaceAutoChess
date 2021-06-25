@@ -6,7 +6,8 @@ public class Crystal : MonoBehaviour {
     public float speed = 20.0f;
     private Rigidbody2D rb;
     private Vector2 screenBounds;
-    
+    private bool outOfBounds = false;
+
     // Start is called before the first frame update
     void Start() {
         rb = this.GetComponent<Rigidbody2D>();
@@ -17,12 +18,15 @@ public class Crystal : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if(transform.position.x < - screenBounds.x * 1.2) {
+            outOfBounds = true;
             Destroy(this.gameObject);
         }
     }
 
     private void OnDestroy()
     {
+        if (outOfBounds) { return; }
+
         var gameBoardManager = FindObjectOfType<GameBoardManager>();
         var allyData = Collectible.GetRandomAllyData();
         gameBoardManager.AddToInventory(allyData.Data);

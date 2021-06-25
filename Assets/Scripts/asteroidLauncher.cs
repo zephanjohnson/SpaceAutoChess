@@ -6,6 +6,9 @@ namespace Obstacles {
     public class asteroidLauncher : MonoBehaviour {
         public GameObject asteroidPrefab;
         public GameObject crystalPrefab;
+
+        public int AsteroidsSpawned;
+        public int CrystalsSpawned;
         public bool didGameEnd = false;
         public float spawnTime = 0.8f;
         public float scaleMultiplier = 1;
@@ -18,6 +21,12 @@ namespace Obstacles {
 
         private List<GameObject> spawnAsteroids;
         private float spawnLocationY;
+        private GamestateManager _gamestateManager;
+
+        public void Awake()
+        {
+            _gamestateManager = FindObjectOfType<GamestateManager>();
+        }
 
         // Start is called before the first frame update
         void Start() {
@@ -29,9 +38,12 @@ namespace Obstacles {
         }
 
         private void spawn() {
-            crystalCounter++;
-            if (crystalCounter % 10 != 0) spawnAsteroid();
-            else spawnCrystal();
+            if (_gamestateManager.State == GameState.Autoplay)
+            {
+                crystalCounter++;
+                if (crystalCounter % 10 != 0) spawnAsteroid();
+                else spawnCrystal();
+            }
         }
 
         private void spawnAsteroid(){
@@ -54,6 +66,7 @@ namespace Obstacles {
             float randomScale = Random.Range(50, 200) * scaleMultiplier;
             a.transform.localScale = new Vector2(randomScale/100, randomScale/100);
             spawnAsteroids.Add(a);
+            AsteroidsSpawned++;
         }
 
         private void spawnCrystal(){
@@ -64,6 +77,7 @@ namespace Obstacles {
             spawnLocationY = Random.Range(screenBounds.y, -screenBounds.y);
             c.transform.position = new Vector2(screenBounds.x * 2, spawnLocationY);
             c.transform.localScale = new Vector2(scaleMultiplier, scaleMultiplier);
+            CrystalsSpawned++;
         }
 
         private bool reRoll(float current_y) {
@@ -77,6 +91,13 @@ namespace Obstacles {
         }
 
         IEnumerator spawner() {
+
+            if (AsteroidsSpawned > _gamestateManager.Level * 100)
+            {
+                _gamestateManager.State = GameState.PostAutoPlay;
+                didGameEnd = false;
+            }
+
             while(!didGameEnd) {
                 yield return new WaitForSeconds(spawnTime);
                 spawn();

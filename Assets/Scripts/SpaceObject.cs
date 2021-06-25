@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class SpaceObject : MonoBehaviour
 {
     public Vector2 GridPosition = new Vector2();
-    public int MovementVelocity =1;
+    public float MovementVelocity =1;
     public int MovementRange = 1;
 
     // Current Health

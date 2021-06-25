@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class AllySpaceObject : SpaceObject
 {
-    public int BulletVelocity;
+    public float BulletVelocity;
     public int BulletFireRate;
     public int BulletDamage;
 
@@ -29,6 +29,8 @@ public class AllySpaceObject : SpaceObject
     protected bool bFirstTimeOscillating = true;
     protected Vector3 requestedPosition;
     protected Vector3 moveV;
+    private bool dirRight = true;
+
 
     /*
      * For shooting
@@ -57,6 +59,7 @@ public class AllySpaceObject : SpaceObject
 
     void Start()
     {
+        dirRight = Random.Range(0,2) == 0;
         rb = GetComponent<Rigidbody2D>();
         startPosition = rb.transform.position;
         rb.isKinematic = true;
@@ -86,7 +89,7 @@ public class AllySpaceObject : SpaceObject
         if (_gamestateManager.State == GameState.Autoplay)
         {
             //change velocity to calculated moving vector
-            rb.velocity = new Vector2(moveV.x, moveV.y) * (MovementVelocity * .25f);
+            //rb.velocity = new Vector2(moveV.x, moveV.y) * (MovementVelocity * .25f);
         }
     }
 
@@ -130,38 +133,53 @@ public class AllySpaceObject : SpaceObject
 
     void Oscillate()
     {
-        Vector3 position = new Vector3(transform.position.x,
-            transform.position.y,
-            transform.position.z);
+        //Vector3 position = new Vector3(transform.position.x,
+        //    transform.position.y,
+        //    transform.position.z);
 
-        float maxRangeUp = startPosition.y + MovementRange - screenFactor;
-        float maxRangeDown = startPosition.y - MovementRange + screenFactor;
+        //float maxRangeUp = startPosition.y + MovementRange - screenFactor;
+        //float maxRangeDown = startPosition.y - MovementRange + screenFactor;
 
-        float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -4f, 4f);
-        float clampedMaxRangeDown = Mathf.Clamp(maxRangeDown, -4f, 4f);
-        bool bChanged = false;
+        //float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -12f, 12f);
+        //float clampedMaxRangeDown = Mathf.Clamp(maxRangeDown, -12f, 12f);
+        //bool bChanged = false;
 
-        if (bFirstTimeOscillating)
+        //if (bFirstTimeOscillating)
+        //{
+        //    position.y = clampedMaxRangeUp;
+        //    bChanged = true;
+        //    bFirstTimeOscillating = false;
+        //}
+        //else if (clampedMaxRangeUp == requestedPosition.y && transform.position.y >= requestedPosition.y)
+        //{
+        //    position.y = clampedMaxRangeDown;
+        //    bChanged = true;
+        //}
+        //else if (clampedMaxRangeDown == requestedPosition.y && transform.position.y <= requestedPosition.y)
+        //{
+        //    position.y = clampedMaxRangeUp;
+        //    bChanged = true;
+
+        //}
+        //if (bChanged)
+        //{
+        //    moveV = position - transform.position;
+        //    requestedPosition = position;
+        //}
+
+        if (dirRight)
+            transform.Translate(Vector3.right * MovementVelocity * Time.deltaTime);
+        else
+            transform.Translate(Vector3.left * MovementVelocity * Time.deltaTime);
+
+        if (transform.position.y >= startPosition.y + MovementRange / 2)
         {
-            position.y = clampedMaxRangeUp;
-            bChanged = true;
-            bFirstTimeOscillating = false;
+            dirRight = true;
         }
-        else if (clampedMaxRangeUp == requestedPosition.y && transform.position.y >= requestedPosition.y)
-        {
-            position.y = clampedMaxRangeDown;
-            bChanged = true;
-        }
-        else if (clampedMaxRangeDown == requestedPosition.y && transform.position.y <= requestedPosition.y)
-        {
-            position.y = clampedMaxRangeUp;
-            bChanged = true;
 
-        }
-        if (bChanged)
+        if (transform.position.y <= startPosition.y - MovementRange / 2)
         {
-            moveV = position - transform.position;
-            requestedPosition = position;
+            dirRight = false;
         }
 
     }

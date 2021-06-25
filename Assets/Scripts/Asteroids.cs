@@ -7,6 +7,7 @@ public class Asteroids : MonoBehaviour {
     private float speed;
     private Rigidbody2D rb;
     private Vector2 screenBounds;
+    private bool outOfBounds = false;
     
     // Start is called before the first frame update
     void Start() {
@@ -20,12 +21,15 @@ public class Asteroids : MonoBehaviour {
     void Update() {
         transform.RotateAround(transform.position, Vector3.forward, Random.Range(50, 150) * Time.deltaTime);
         if(transform.position.x < - screenBounds.x * 1.2) {
+            outOfBounds = true;
             Destroy(this.gameObject);
         }
     }
 
     private void OnDestroy()
     {
+        if (outOfBounds) { return; }
+
         var rnd = Random.Range(0, 10);
         if (rnd == 0)
         {

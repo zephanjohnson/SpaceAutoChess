@@ -154,6 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   asteroidPrefab: {fileID: 5714756101186048022, guid: 131af686084c943a6b649862a5aa6ac7, type: 3}
   crystalPrefab: {fileID: 8998113314965013970, guid: 31717fb02d89946d385fefbda878b97e, type: 3}
+  AsteroidsSpawned: 0
+  CrystalsSpawned: 0
   didGameEnd: 0
   spawnTime: 0.8
   scaleMultiplier: 0.1
@@ -590,7 +592,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.10190296, a: 1}
+  m_Color: {r: 0, g: 0.66479015, b: 1, a: 0.8156863}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -598,7 +600,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 7cb2912222469634ba17a77055919ea8, type: 3}
     m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 1
