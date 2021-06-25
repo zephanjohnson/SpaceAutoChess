@@ -52,8 +52,7 @@ public class Collectible : MonoBehaviour
         // Probably want to assign this later, instead of using FindObjectOfType when these get instantiated during autoplay
         gm = FindObjectOfType<GamestateManager>();
         int rndFloat = Random.Range(0, AllyDataLibrary.Allies.Count);
-        string allyKey = GetRandomAllyKey();
-        var allyData = AllyDataLibrary.Allies[allyKey];
+        AllyData allyData = GetRandomAllyData();
         PopulateData(allyData.Data);
         var sprite = Resources.Load<Sprite>(allyData.IconResourcePath);
         GetComponent<SpriteRenderer>().sprite = sprite;
@@ -73,10 +72,13 @@ public class Collectible : MonoBehaviour
         }
     }
 
-    private string GetRandomAllyKey() {
+    public static AllyData GetRandomAllyData() {
 
         int rndFloat = Random.Range(0, AllyDataLibrary.LevelOneAllyKeys.Length);
         var allieKeys = AllyDataLibrary.LevelOneAllyKeys;
-        return allieKeys[rndFloat];
+        var allyKey = allieKeys[rndFloat];
+        var allyData = AllyDataLibrary.Allies[allyKey];
+
+        return allyData;
     }
 }

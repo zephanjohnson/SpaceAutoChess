@@ -23,4 +23,15 @@ public class Asteroids : MonoBehaviour {
             Destroy(this.gameObject);
         }
     }
+
+    private void OnDestroy()
+    {
+        var rnd = Random.Range(0, 10);
+        if (rnd == 0)
+        {
+            var gameBoardManager = FindObjectOfType<GameBoardManager>();
+            var allyData = Collectible.GetRandomAllyData();
+            gameBoardManager.AddToInventory(allyData.Data);
+        }
+    }
 }

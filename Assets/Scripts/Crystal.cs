@@ -20,4 +20,11 @@ public class Crystal : MonoBehaviour {
             Destroy(this.gameObject);
         }
     }
+
+    private void OnDestroy()
+    {
+        var gameBoardManager = FindObjectOfType<GameBoardManager>();
+        var allyData = Collectible.GetRandomAllyData();
+        gameBoardManager.AddToInventory(allyData.Data);
+    }
 }
