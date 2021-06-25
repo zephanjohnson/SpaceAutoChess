@@ -7,7 +7,7 @@ public class AllySpaceObject : SpaceObject
 {
     public int BulletVelocity;
     public int BulletFireRate;
-    public int BulletDamage; 
+    public int BulletDamage;
 
     public void SetData(AllyData allyData)
     {
@@ -36,14 +36,15 @@ public class AllySpaceObject : SpaceObject
     public GameObject Bullet;
     protected Vector2 bulletPos;
     protected float nextFire;
+    protected float screenFactor;
 
     private GamestateManager _gamestateManager;
 
     void Awake()
     {
         _gamestateManager = FindObjectOfType<GamestateManager>();
-     
-        GridPosition = new Vector2(0,0);
+
+        GridPosition = new Vector2(0, 0);
 
         OnCurrentHealthChange += (int oldValue, int current) =>
         {
@@ -59,9 +60,22 @@ public class AllySpaceObject : SpaceObject
         rb = GetComponent<Rigidbody2D>();
         startPosition = rb.transform.position;
         rb.isKinematic = true;
-        nextFire= 1.0f / (float)BulletFireRate;
-        Debug.Log("Bullet Fire Rate:" +BulletFireRate);
-        Debug.Log("Initial fire rate: " + nextFire);
+        nextFire = 1.0f / (float)BulletFireRate;
+
+        //Number of ship rows
+        int numberOfSpaceShips = 6; //Hardcoded for now
+        float sizeOfSpaceShip = (float)(GetComponent<Collider2D>().bounds.size.y);
+
+        //Units per pixel
+        Vector3 p1 = Camera.main.ScreenToWorldPoint(Vector3.zero);
+        Vector3 p2 = Camera.main.ScreenToWorldPoint(Vector3.up);
+        float unitsPerPixel = Vector3.Distance(p1, p2);
+        //Total Units
+        //Somehow below fuzzy logic works 
+        float totalUnits = Screen.height * unitsPerPixel;
+
+        screenFactor = totalUnits / (sizeOfSpaceShip * numberOfSpaceShips);
+        Debug.Log("Number of SpaceShips " + numberOfSpaceShips + " Screen Height " + Screen.height + "size of ship " + sizeOfSpaceShip + "screenFactor " + screenFactor);
     }
 
     /*
@@ -69,7 +83,8 @@ public class AllySpaceObject : SpaceObject
     */
     void FixedUpdate()
     {
-        if (_gamestateManager.State == GameState.Autoplay) {
+        if (_gamestateManager.State == GameState.Autoplay)
+        {
             //change velocity to calculated moving vector
             rb.velocity = new Vector2(moveV.x, moveV.y) * (MovementVelocity * .25f);
         }
@@ -100,14 +115,13 @@ public class AllySpaceObject : SpaceObject
     void Shoot()
     {
         nextFire -= Time.deltaTime;
-        
+
         if (nextFire <= 0)
         {
-            Debug.Log("Fired bullet");
             nextFire = 1.0f / (float)BulletFireRate;
             bulletPos = transform.position;
             bulletPos += new Vector2(+1f, -.43f);
-            
+
             var bullet = Instantiate(Bullet, transform.position, Quaternion.identity);
             bullet.GetComponent<BulletBehavior>().speed = BulletVelocity;
         }
@@ -120,10 +134,9 @@ public class AllySpaceObject : SpaceObject
             transform.position.y,
             transform.position.z);
 
-        
-        float maxRangeUp = startPosition.y + (1- 1/MovementRange); /// (MovementRange * 2f) ;
-        float maxRangeDown = startPosition.y - (1-1/MovementRange); /// (MovementRange * 2f) ;
-     
+        float maxRangeUp = startPosition.y + MovementRange - screenFactor;
+        float maxRangeDown = startPosition.y - MovementRange + screenFactor;
+
         float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -4f, 4f);
         float clampedMaxRangeDown = Mathf.Clamp(maxRangeDown, -4f, 4f);
         bool bChanged = false;
@@ -155,14 +168,14 @@ public class AllySpaceObject : SpaceObject
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.name.Contains("Board"))
-            Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), GetComponent<Collider2D>());
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
+        Debug.Log("CurrentHealth " + CurrentHealth);
         if (collision.gameObject.name.Contains("Board"))
             Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+        else if (collision.gameObject.name.Contains("asteroid"))
+        {
+            CurrentHealth--;
+        }
+        //TODO: Call api to get the collectable.
     }
 }
 
