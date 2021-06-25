@@ -64,7 +64,7 @@ public class AllySpaceObject : SpaceObject
 
         //Number of ship rows
         int numberOfSpaceShips = 6; //Hardcoded for now
-        float sizeOfSpaceShip = (float)(GetComponent<Collider2D>().bounds.size.y);
+        float sizeOfSpaceShip = (float)(GetComponent<BoxCollider2D>().bounds.size.y);
 
         //Units per pixel
         Vector3 p1 = Camera.main.ScreenToWorldPoint(Vector3.zero);
@@ -73,6 +73,9 @@ public class AllySpaceObject : SpaceObject
         //Total Units
         //Somehow below fuzzy logic works 
         float totalUnits = Screen.height * unitsPerPixel;
+
+        //Hardcode ship size
+        sizeOfSpaceShip = .8f;
 
         screenFactor = totalUnits / (sizeOfSpaceShip * numberOfSpaceShips);
         Debug.Log("Number of SpaceShips " + numberOfSpaceShips + " Screen Height " + Screen.height + "size of ship " + sizeOfSpaceShip + "screenFactor " + screenFactor);
@@ -134,7 +137,7 @@ public class AllySpaceObject : SpaceObject
             transform.position.y,
             transform.position.z);
 
-        float maxRangeUp = startPosition.y + MovementRange - screenFactor;
+        float maxRangeUp = startPosition.y +  MovementRange - screenFactor;
         float maxRangeDown = startPosition.y - MovementRange + screenFactor;
 
         float clampedMaxRangeUp = Mathf.Clamp(maxRangeUp, -4f, 4f);
