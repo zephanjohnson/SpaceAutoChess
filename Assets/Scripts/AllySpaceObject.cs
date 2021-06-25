@@ -101,7 +101,7 @@ public class AllySpaceObject : SpaceObject
         {
 
             Oscillate();
-            //Shoot();
+            Shoot();
         }
     }
 
