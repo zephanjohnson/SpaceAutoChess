@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Crystal : MonoBehaviour {
-    private float speed = 20.0f;
+    public float speed = 20.0f;
     private Rigidbody2D rb;
     private Vector2 screenBounds;
     

@@ -10,6 +10,8 @@ namespace Obstacles {
         public float spawnTime = 0.8f;
         public float scaleMultiplier = 1;
         public int loop = 0;
+        public float AsteroidSpeedMultiplier = 2f;
+        public float CrystalSpeedMultiplier = 1f;
         private int counter;
         private int crystalCounter = 0;
         private Vector2 screenBounds;
@@ -42,7 +44,10 @@ namespace Obstacles {
                 counter = loop;
             };
             GameObject a = Instantiate(asteroidPrefab) as GameObject;
-            do{
+            var asteroids = a.GetComponent<Asteroids>();
+            asteroids.speedMultiplier = AsteroidSpeedMultiplier;
+            do
+            {
                 spawnLocationY = Random.Range(screenBounds.y, -screenBounds.y);
             } while(reRoll(spawnLocationY));
             a.transform.position = new Vector2(screenBounds.x * 2, spawnLocationY);
@@ -54,6 +59,8 @@ namespace Obstacles {
         private void spawnCrystal(){
             Random.InitState((int) System.DateTime.Now.Ticks);
             GameObject c = Instantiate(crystalPrefab) as GameObject;
+            var crystal = c.GetComponent<Crystal>();
+            crystal.speed = CrystalSpeedMultiplier;
             spawnLocationY = Random.Range(screenBounds.y, -screenBounds.y);
             c.transform.position = new Vector2(screenBounds.x * 2, spawnLocationY);
             c.transform.localScale = new Vector2(scaleMultiplier, scaleMultiplier);
