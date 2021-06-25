@@ -29,6 +29,6 @@ public class Crystal : MonoBehaviour {
 
         var gameBoardManager = FindObjectOfType<GameBoardManager>();
         var allyData = Collectible.GetRandomAllyData();
-        gameBoardManager.AddToInventory(allyData.Data);
+        gameBoardManager?.AddToInventory(allyData.Data);
     }
 }

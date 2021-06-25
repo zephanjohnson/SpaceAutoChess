@@ -222,10 +222,10 @@ public class GamestateManager : MonoBehaviour
     {
         //SceneManager.LoadScene("Prep");
         SceneManager.LoadScene("Planning");
-        GameObject startingShip = GameObject.Instantiate(_startingShip);
-        startingShip.GetComponent<Collectible>().Location = CollectibleLocation.Field;
-        startingShip.transform.position = new Vector3(0, 0, 0);
-        SaveCurrentGameState(true);
+        //GameObject startingShip = GameObject.Instantiate(_startingShip);
+        //startingShip.GetComponent<Collectible>().Location = CollectibleLocation.Field;
+        //startingShip.transform.position = new Vector3(0, 0, 0);
+        //SaveCurrentGameState(true);
     }
     public void LoadPlanningPhase()
     {

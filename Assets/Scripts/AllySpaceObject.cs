@@ -18,7 +18,6 @@ public class AllySpaceObject : SpaceObject
         BulletVelocity = allyData.BulletVelocity;
         BulletFireRate = allyData.BulletFireRatePerSecond;
         BulletDamage = allyData.BulletDamage;
-
     }
 
     /*
@@ -40,21 +39,18 @@ public class AllySpaceObject : SpaceObject
     protected float nextFire;
     protected float screenFactor;
 
+    public UnityAction<AllySpaceObject> OnAllySpaceObjectDestroyed;
+
     private GamestateManager _gamestateManager;
+    public HealthBar HealthBar;
 
     void Awake()
     {
         _gamestateManager = FindObjectOfType<GamestateManager>();
+        HealthBar = GetComponentInChildren<HealthBar>();
 
         GridPosition = new Vector2(0, 0);
-
-        OnCurrentHealthChange += (int oldValue, int current) =>
-        {
-            if (current <= 0)
-            {
-                Destroy(this.gameObject);
-            }
-        };
+        OnCurrentHealthChange += UpdateHealthBar;
     }
 
     void Start()
@@ -81,7 +77,7 @@ public class AllySpaceObject : SpaceObject
         sizeOfSpaceShip = .8f;
 
         screenFactor = totalUnits / (sizeOfSpaceShip * numberOfSpaceShips);
-        Debug.Log("Number of SpaceShips " + numberOfSpaceShips + " Screen Height " + Screen.height + "size of ship " + sizeOfSpaceShip + "screenFactor " + screenFactor);
+        //Debug.Log("Number of SpaceShips " + numberOfSpaceShips + " Screen Height " + Screen.height + "size of ship " + sizeOfSpaceShip + "screenFactor " + screenFactor);
     }
 
     /*
@@ -105,7 +101,7 @@ public class AllySpaceObject : SpaceObject
         {
 
             Oscillate();
-            Shoot();
+            //Shoot();
         }
     }
 
@@ -137,9 +133,9 @@ public class AllySpaceObject : SpaceObject
     void Oscillate()
     {
         if (dirRight)
-            transform.Translate(Vector3.right * MovementVelocity * Time.deltaTime);
+            transform.Translate(Vector3.down * MovementVelocity * Time.deltaTime);
         else
-            transform.Translate(Vector3.left * MovementVelocity * Time.deltaTime);
+            transform.Translate(Vector3.up * MovementVelocity * Time.deltaTime);
 
         if (transform.position.y >= startPosition.y + MovementRange / 2)
         {
@@ -155,7 +151,6 @@ public class AllySpaceObject : SpaceObject
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("CurrentHealth " + CurrentHealth);
         if (collision.gameObject.name.Contains("Board"))
             Physics2D.IgnoreCollision(collision.gameObject.GetComponent<Collider2D>(), GetComponent<Collider2D>());
         else if (collision.gameObject.name.Contains("asteroid"))
@@ -163,6 +158,22 @@ public class AllySpaceObject : SpaceObject
             CurrentHealth--;
         }
         //TODO: Call api to get the collectable.
+    }
+
+    private void UpdateHealthBar(int oldHealth, int currentHealth)
+    {
+        Debug.Log("CurrentHealth " + currentHealth);
+        float healthRatio = (float) currentHealth / (float) MaxHealth;
+        HealthBar.SetSize(healthRatio);
+        if (currentHealth <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        OnAllySpaceObjectDestroyed?.Invoke(this);
     }
 }
 

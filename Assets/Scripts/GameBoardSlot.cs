@@ -35,7 +35,6 @@ public class GameBoardSlot : MonoBehaviour
 
     public void Assign(CollectibleData data)
     {
-        Debug.Log($"Assign {Index} - {data.Name}");
         CollectibleData = data;
         IsOccupied = true;
         _draggableIcon.sprite = Resources.Load<Sprite>(data.IconResourcePath);
@@ -46,7 +45,6 @@ public class GameBoardSlot : MonoBehaviour
 
     public void Release()
     {
-        Debug.Log($"Release {Index} - {CollectibleData.Name}");
         CollectibleData = new CollectibleData();
         IsOccupied = false;
         _draggableIcon.sprite = null;

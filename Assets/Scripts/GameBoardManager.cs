@@ -47,6 +47,8 @@ public class GameBoardManager : MonoBehaviour
     private GamestateManager _gamestateManager;
     private GameBoardState _gameBoardState;
 
+    public int ShipCount;
+
     public void Awake()
     {
         _gamestateManager = GetComponent<GamestateManager>();
@@ -148,6 +150,9 @@ public class GameBoardManager : MonoBehaviour
 
     public void LoadPlanningState(GameBoardState state)
     {
+        state.InventoryState = state.InventoryState != null ? state.InventoryState : new List<InventorySlotState>();
+        state.BoardState = state.BoardState != null ? state.BoardState : new List<BoardSlotState>();
+
         // Populate Inventory
         foreach (var slotState in state.InventoryState)
         {
@@ -157,7 +162,6 @@ public class GameBoardManager : MonoBehaviour
             }
         }
 
-        Debug.Log(state.BoardState.Count);
         foreach (var boardState in state.BoardState)
         {
             if (boardState.IsOccupied)
@@ -176,11 +180,15 @@ public class GameBoardManager : MonoBehaviour
         
     public void LoadAutoplayState(GameBoardState state)
     {
+        ShipCount = 0;
         _gameBoardState = state;
+        state.InventoryState = state.InventoryState != null ? state.InventoryState : new List<InventorySlotState>();
+        state.BoardState = state.BoardState != null ? state.BoardState : new List<BoardSlotState>();
 
         // Instantiate Ships
         if (_gamestateManager.State == GameState.PreAutoPlay)
         {
+            
             foreach (var boardState in state.BoardState)
             {
                 if (boardState.IsOccupied)
@@ -200,9 +208,7 @@ public class GameBoardManager : MonoBehaviour
                 if (boardState.IsOccupied)
                     UpdateBoardSlot(boardState.Data, boardState.CoordinateX, boardState.CoordinateY);
         }
-
         
-
         // Populate Inventory
         foreach (var slotState in state.InventoryState)
         {
@@ -215,12 +221,20 @@ public class GameBoardManager : MonoBehaviour
     
      public void LoadShip(BoardSlotState slot)
      {
-         Debug.Log("x, y:" + slot.CoordinateX +", " + slot.CoordinateY);
-         var go = Instantiate(Resources.Load(slot.Data.ResourcePath), new Vector3(slot.CoordinateY, slot.CoordinateX, 0f), Quaternion.Euler(0, 90, -90)) as GameObject;
-         var spaceObject = go.GetComponent<AllySpaceObject>();
-         var allyData = AllyDataLibrary.Allies[slot.Data.Key];
-         spaceObject.SetData(allyData);
-         go.transform.position = new Vector3(boardTopLeft.x + 2.5f * slot.CoordinateX, boardTopLeft.y - 1.25f * slot.CoordinateY, -1);
+        ShipCount++;
+
+        //Debug.Log("x, y:" + slot.CoordinateX +", " + slot.CoordinateY);
+        var go = Instantiate(Resources.Load(slot.Data.ResourcePath), new Vector3(slot.CoordinateY, slot.CoordinateX, 0f), Quaternion.Euler(0, 0, 0)) as GameObject;
+        var spaceObject = go.GetComponent<AllySpaceObject>();
+        var allyData = AllyDataLibrary.Allies[slot.Data.Key];
+        spaceObject.SetData(allyData);
+        spaceObject.OnAllySpaceObjectDestroyed += (ship) => {
+            ShipCount--;
+            if (ShipCount == 0) {
+                _gamestateManager.LoseLevel();
+            }
+        };
+        go.transform.position = new Vector3(boardTopLeft.x + 2.5f * slot.CoordinateX, boardTopLeft.y - 1.25f * slot.CoordinateY, -1);
      }
 
     public void PlaceCollectible()
@@ -245,7 +259,7 @@ public class GameBoardManager : MonoBehaviour
     
     public void UpdateBoardSlot(CollectibleData data, int corX, int corY)
     {
-        Debug.Log("UpdateBoardSlot called");
+        //Debug.Log("UpdateBoardSlot called");
         var slot = _boardSlots[corX, corY];
         slot.Release();
         slot.Assign(data);

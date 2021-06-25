@@ -62,7 +62,7 @@ public class asteroidLauncher : MonoBehaviour {
         } else if (loop != -1 && counter == -1) {
             counter = loop;
         };
-        GameObject a = Instantiate(asteroidPrefab) as GameObject;
+        GameObject a = Instantiate(asteroidPrefab, transform) as GameObject;
         var asteroids = a.GetComponent<Asteroids>();
         asteroids.speedMultiplier = AsteroidSpeedMultiplier;
         do
@@ -79,7 +79,7 @@ public class asteroidLauncher : MonoBehaviour {
 
     private void spawnCrystal() {
         Random.InitState((int)System.DateTime.Now.Ticks);
-        GameObject c = Instantiate(crystalPrefab) as GameObject;
+        GameObject c = Instantiate(crystalPrefab, transform) as GameObject;
         var crystal = c.GetComponent<Crystal>();
         crystal.speed = CrystalSpeedMultiplier;
         spawnLocationY = Random.Range(screenBounds.y, -screenBounds.y);
@@ -104,7 +104,7 @@ public class asteroidLauncher : MonoBehaviour {
     {
         while (!didGameEnd)
         {
-            if (AsteroidsSpawned > MaxAsteroidsSpawned)
+            if (AsteroidsSpawned >= MaxAsteroidsSpawned)
             {
                 _gamestateManager.State = GameState.PostAutoPlay;
                 didGameEnd = false;

@@ -5,20 +5,15 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Slider healthBar;
-    public AllySpaceObject AllySpaceObject;
+    private Transform _bar;
 
-    private void Start()
+    private void Awake()
     {
-        healthBar = GetComponent<Slider>();
-        healthBar.maxValue = AllySpaceObject.MaxHealth;
-        healthBar.value = AllySpaceObject.CurrentHealth;
-        AllySpaceObject.OnCurrentHealthChange += SetHealth;
-        AllySpaceObject.OnMaxHealthChange += (int oldValue, int value) => { healthBar.maxValue = value; };
+        _bar = transform.Find("Bar");
     }
 
-    public void SetHealth(int oldValue, int hp)
+    public void SetSize(float sizeNormalized)
     {
-        healthBar.value = hp;
+        _bar.localScale = new Vector3(sizeNormalized, 1f);
     }
 }
