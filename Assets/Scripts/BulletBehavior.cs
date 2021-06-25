@@ -8,7 +8,7 @@ public class BulletBehavior : MonoBehaviour
     public Rigidbody2D rb;
     public float speed;
     public float damage;
-    public float velX = 5000000f;
+    public float velX = 1;
     public float velY = 0;
 
     // Start is called before the first frame update
